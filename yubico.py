@@ -50,14 +50,15 @@ class Yubico():
 		request_urls = self.generate_request_urls()
 
 		threads = []
+		timeout = timeout or TIMEOUT
 		for url in request_urls:
-			thread = URLThread('%s?%s' % (url, query_string))
+			thread = URLThread('%s?%s' % (url, query_string), timeout)
 			thread.start()
 			threads.append(thread)
 
 		# Wait for a first positive or negative response
 		start_time = time.time()
-		while threads and (start_time + TIMEOUT) > time.time():
+		while threads and (start_time + timeout) > time.time():
 			for thread in threads:
 				if not thread.is_alive() and thread.response:
 					status = self.verify_response(thread.response)
@@ -165,15 +166,16 @@ class Yubico():
 		return urls
 		
 class URLThread(threading.Thread):
-	def __init__(self, url):
+	def __init__(self, url, timeout):
 		super(URLThread, self).__init__()
 		self.url = url
+		self.timeout = timeout
 		self.request = None
 		self.response = None
 		
 	def run(self):
 		try:
-			self.request = urllib2.urlopen(self.url, timeout = TIMEOUT)
+			self.request = urllib2.urlopen(self.url, timeout = self.timeout)
 			self.response = self.request.read()
 		except Exception:
 			self.response = None
