@@ -10,10 +10,12 @@
 #            
 # Author: Tomaž Muraus (http://www.tomaz-muraus.info)
 # License: GPL (http://www.gnu.org/licenses/gpl.html)
-# Version: 1.0.0
+# Version: 1.1
 
 # Requirements:
 # - Python >= 2.5
+
+__version__ = (1, 1, 'dev')
 
 import os
 import time
@@ -60,8 +62,8 @@ class Yubico():
 				if not thread.is_alive() and thread.response:
 					status = self.verify_response(thread.response)
 					
-					if status in [1, 2]:
-						return True if status == 1 else False
+					if status:
+						return True	
 					threads.remove(thread)
 
 		return None
@@ -83,14 +85,15 @@ class Yubico():
 				# Signature located in the response does not match the one we have
 				# generated
 				if signature != generated_signature:
-					return 2
+					raise SignatureVerificationError(generated_signature, signature)
 		except KeyError:
+			# Missing status code, malformed response?
 			return False
 		
 		if status == 'OK':
-			return 1
+			return True
 		elif status == 'REPLAYED_OTP':
-			return 2
+			raise StatusCodeError('REPLAYED_OTP')
 		
 		return False
 		
@@ -174,3 +177,23 @@ class URLThread(threading.Thread):
 			self.response = self.request.read()
 		except Exception:
 			self.response = None
+
+class YubicoError(Exception):
+	""" Base class for Yubico related exceptions. """
+	pass
+
+class StatusCodeError(YubicoError):
+	def __init__(self, status_code):
+		self.status_code = status_code
+		
+	def __str__(self):
+		return 'Yubico server returned the following status code: %s' % (self.status_code)
+
+class SignatureVerificationError(YubicoError):
+	def __init__(self, generated_signature, response_signature):
+		self.generated_signature = generated_signature
+		self.response_signature = response_signature
+		
+	def __str__(self):
+		return repr('Server response message signature verification failed (expected %s, got %s)' \
+				% (self.generated_signature, self.response_signature))
