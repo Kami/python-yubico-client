@@ -10,12 +10,10 @@
 #            
 # Author: Tomaž Muraus (http://www.tomaz-muraus.info)
 # License: GPL (http://www.gnu.org/licenses/gpl.html)
-# Version: 1.1
+# Version: 1.2
 
 # Requirements:
 # - Python >= 2.5
-
-__version__ = (1, 1, 'dev')
 
 import os
 import time

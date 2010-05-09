@@ -8,7 +8,7 @@ version_re = re.compile(
     r'__version__ = (\(.*?\))')
 
 cwd = os.path.dirname(os.path.abspath(__file__))
-fp = open(os.path.join(cwd, 'yubico.py'))
+fp = open(os.path.join(cwd, 'yubico', '__init__.py'))
 
 version = None
 for line in fp:
@@ -17,7 +17,7 @@ for line in fp:
         version = eval(match.group(1))
         break
 else:
-    raise Exception('Cannot find version in yubico.py')
+    raise Exception('Cannot find version in __init__.py')
 fp.close()
 
 setup(name = 'yubico',
@@ -27,8 +27,8 @@ setup(name = 'yubico',
 	  author_email = 'kami@k5-storitve.net',
 	  license = 'GPL',
 	  url = 'http://github.com/Kami/python-yubico-client/',
-	  download_url = 'http://github.com/Kami/python-yubico-client/',
-	  py_modules = ['yubico'],
+	  download_url = 'http://github.com/Kami/python-yubico-client/downloads/',
+	  packages = ['yubico'],
 	  provides = ['yubico'], 
 	  
 	  classifiers = [
