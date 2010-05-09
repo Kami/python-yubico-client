@@ -1,5 +1,6 @@
 import sys
-import yubico
+from yubico import yubico
+from yubico import yubico_exceptions
 
 client_id = raw_input('Enter your client id: ')
 secret_key = raw_input('Enter your secret key (optional): ')
@@ -18,10 +19,13 @@ client = yubico.Yubico(client_id, secret_key, https)
 
 try:
 	status = client.verify(token)
-except yubico.SignatureVerificationError:
+except yubico_exceptions.InvalidClientIdError, e:
+	print 'Client with id %s does not exist' % (e.client_id)
+	sys.exit(1)
+except yubico_exceptions.SignatureVerificationError:
 	print 'Signature verification failed'
 	sys.exit(1)
-except yubico.StatusCodeError, e:
+except yubico_exceptions.StatusCodeError, e:
 	print 'Negative status code was returned: %s' % (e.status_code)
 	sys.exit(1)
 	
