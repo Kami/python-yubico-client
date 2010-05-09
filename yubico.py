@@ -26,12 +26,18 @@ import base64
 import hashlib
 import threading
 
+from otp import OTP
+from yubico_exceptions import *
+
 API_URLS = ('api.yubico.com/wsapi/2.0/verify',
 			'api2.yubico.com/wsapi/2.0/verify',
 			'api3.yubico.com/wsapi/2.0/verify',
 			'api4.yubico.com/wsapi/2.0/verify',
 			'api5.yubico.com/wsapi/2.0/verify')
-TIMEOUT = 10 # How long to wait before the time out occurs
+TIMEOUT = 10 			# How long to wait before the time out occurs
+MAX_TIME_WINDOW = 40	# How many seconds can pass between the first and last OTP generations
+						# so the OTP is still considered valid (only used in the multi mode)
+						# default is 5 seconds (40 / 0.125 = 5)
 
 class Yubico():
 	def __init__(self, client_id, key = None, use_https = True):
@@ -39,7 +45,7 @@ class Yubico():
 		self.key = base64.b64decode(key) if key is not None else None
 		self.use_https = use_https
 	
-	def verify(self, otp, timestamp = False, sl = None, timeout = None):
+	def verify(self, otp, timestamp = False, sl = None, timeout = None, return_response = False):
 		"""
 		Returns True is the provided OTP is valid,
 		False if the REPLAYED_OTP status value is returned or the response
@@ -61,18 +67,60 @@ class Yubico():
 		while threads and (start_time + timeout) > time.time():
 			for thread in threads:
 				if not thread.is_alive() and thread.response:
-					status = self.verify_response(thread.response)
+					status = self.verify_response(thread.response, return_response)
 					
 					if status:
-						return True	
+						if return_response:
+							return status
+						else:
+							return True	
 					threads.remove(thread)
 
 		return None
+	
+	def verify_multi(self, otp_list = None, max_time_window = None, sl = None, timeout = None):
+		# Create the OTP objects
+		otps = []
+		for otp in otp_list:
+			otps.append(OTP(otp))
+		
+		device_ids = set()
+		for otp in otps:
+			device_ids.add(otp.device_id)
+			
+		# Check that all the OTPs contain same device id
+		if len (device_ids) != 1:
+			return False
+		
+		# Now we verify the OTPs and save the server response for each OTP.
+		# We need the server response, to retrieve the timestamp.
+		# It's possible to retrieve this value locally, without querying the server
+		# but in this case, user would need to provide his AES key.
+		for otp in otps:
+			response = self.verify(otp.otp, True, sl, timeout, return_response = True)
+			
+			if not response:
+				return False
+
+			otp.timestamp = int(response['timestamp'])
+		
+		count = len(otps)
+		delta = otps[count - 1].timestamp - otps[0].timestamp
+		
+		max_time_window = (max_time_window / 0.125) if max_time_window else None
+		max_time_window = max_time_window or MAX_TIME_WINDOW
+		if delta > max_time_window:
+			return False
+		
+		return True
 				
-	def verify_response(self, response):
+	def verify_response(self, response, return_response = False):
 		"""
-		Returns 1 if the OTP is valid (status=OK), 2 if the OTP is replayed
-		or the server response message verification failed, False otherwise.
+		Returns True if the OTP is valid (status=OK) and return_response = False,
+		otherwise (return_response = True) it returns the server response as a dictionary.
+		
+		Throws an exception if the OTP is replayed, the server response message
+		verification failed or the client id is invalid, returns False otherwise.
 		"""
 		try:
 			status = response.split('status=')[1].strip()
@@ -92,7 +140,15 @@ class Yubico():
 			return False
 		
 		if status == 'OK':
-			return True
+			if return_response:
+				query_string = self.parse_parameters_from_response(response)[1]
+				response = self.get_parameters_as_dictionary(query_string)
+				
+				return response
+			else:
+				return True
+		elif status == 'NO_SUCH_CLIENT':
+			raise InvalidClientIdError(self.client_id)
 		elif status == 'REPLAYED_OTP':
 			raise StatusCodeError('REPLAYED_OTP')
 		
@@ -151,6 +207,13 @@ class Yubico():
 
 		return (signature, query_string)
 	
+	def get_parameters_as_dictionary(self, query_string):
+		""" Returns query string parameters as a dictionary. """
+		dictionary = dict([parameter.split('=') for parameter \
+					in query_string.split('&')])
+		
+		return dictionary
+	
 	def generate_request_urls(self):
 		"""
 		Returns a list of the API URLs.
@@ -179,23 +242,3 @@ class URLThread(threading.Thread):
 			self.response = self.request.read()
 		except Exception:
 			self.response = None
-
-class YubicoError(Exception):
-	""" Base class for Yubico related exceptions. """
-	pass
-
-class StatusCodeError(YubicoError):
-	def __init__(self, status_code):
-		self.status_code = status_code
-		
-	def __str__(self):
-		return 'Yubico server returned the following status code: %s' % (self.status_code)
-
-class SignatureVerificationError(YubicoError):
-	def __init__(self, generated_signature, response_signature):
-		self.generated_signature = generated_signature
-		self.response_signature = response_signature
-		
-	def __str__(self):
-		return repr('Server response message signature verification failed (expected %s, got %s)' \
-				% (self.generated_signature, self.response_signature))
