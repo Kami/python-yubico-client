@@ -16,6 +16,7 @@
 # - Python >= 2.5
 
 import os
+import sys
 import time
 import urllib
 import urllib2
@@ -233,6 +234,9 @@ class URLThread(threading.Thread):
 		self.timeout = timeout
 		self.request = None
 		self.response = None
+		
+		if int(sys.version[0]) == 2 and int(sys.version[2]) <= 5:
+			self.is_alive = self.isAlive
 		
 	def run(self):
 		try:
