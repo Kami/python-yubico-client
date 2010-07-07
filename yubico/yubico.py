@@ -15,6 +15,7 @@
 # Requirements:
 # - Python >= 2.5
 
+import re
 import os
 import sys
 import time
@@ -122,8 +123,12 @@ class Yubico():
 		verification failed or the client id is invalid, returns False otherwise.
 		"""
 		try:
-			status = response.split('status=')[1].strip()
-
+			try:
+				status = re.search(r'status=([a-zA-Z0-9_]+)', response) \
+									 .groups()[0]
+			except AttributeError, IndexError:
+				return False
+			
 			# Secret key is specified, so we verify the response message
 			# signature
 			if self.key != None:
