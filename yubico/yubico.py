@@ -19,6 +19,7 @@ import re
 import os
 import sys
 import time
+import socket
 import urllib
 import urllib2
 import hmac
@@ -244,8 +245,10 @@ class URLThread(threading.Thread):
 			self.is_alive = self.isAlive
 		
 	def run(self):
+		socket.setdefaulttimeout(self.timeout)
+		
 		try:
-			self.request = urllib2.urlopen(self.url, timeout = self.timeout)
+			self.request = urllib2.urlopen(self.url)
 			self.response = self.request.read()
 		except Exception:
 			self.response = None
