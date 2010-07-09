@@ -41,10 +41,12 @@ MAX_TIME_WINDOW = 40	# How many seconds can pass between the first and last OTP 
 						# default is 5 seconds (40 / 0.125 = 5)
 
 class Yubico():
-	def __init__(self, client_id, key = None, use_https = True):
+	def __init__(self, client_id, key = None, use_https = True,
+							 translate_otp = True):
 		self.client_id = client_id
 		self.key = base64.b64decode(key) if key is not None else None
 		self.use_https = use_https
+		self.translate_otp = translate_otp
 	
 	def verify(self, otp, timestamp = False, sl = None, timeout = None, return_response = False):
 		"""
@@ -52,8 +54,9 @@ class Yubico():
 		False if the REPLAYED_OTP status value is returned or the response
 		message signature verification failed and None for the rest of the status values.
 		"""
+		otp = OTP(otp, self.translate_otp)
 		nonce = base64.b64encode(os.urandom(30), 'xz')[:25]
-		query_string = self.generate_query_string(otp, nonce, timestamp, sl, timeout)
+		query_string = self.generate_query_string(otp.otp, nonce, timestamp, sl, timeout)
 		request_urls = self.generate_request_urls()
 
 		threads = []
@@ -83,7 +86,7 @@ class Yubico():
 		# Create the OTP objects
 		otps = []
 		for otp in otp_list:
-			otps.append(OTP(otp))
+			otps.append(OTP(otp, self.translate_otp))
 		
 		device_ids = set()
 		for otp in otps:
