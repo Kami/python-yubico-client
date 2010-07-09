@@ -10,7 +10,7 @@
 #            
 # Author: Tomaž Muraus (http://www.tomaz-muraus.info)
 # License: GPL (http://www.gnu.org/licenses/gpl.html)
-# Version: 1.2
+# Version: 1.3
 
 # Requirements:
 # - Python >= 2.5
