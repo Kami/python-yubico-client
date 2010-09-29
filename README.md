@@ -41,3 +41,10 @@ Both methods can also throw one of the following exceptions:
 - **StatusCodeError** - server returned **REPLAYED_OTP** status code
 - **SignatureVerificationError** - server response message signature verification failed
 - **InvalidClientIdError** - client with the specified id does not exist (server returned **NO_SUCH_CLIENT** status code)
+
+## Notes
+
+If you are using secure connection (https) and want to validate the server certificate, you need to pass ``verify_cert = True`` argument when instantiating the yubico class and set ``CA_CERTS`` variable in the
+``yubico/httplib_ssl.py`` file so it points to a file containing trusted CA certificates.
+
+For a backward compatibility, ``verify_cert`` is set to ``False`` by default.

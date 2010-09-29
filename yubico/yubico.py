@@ -30,6 +30,11 @@ import threading
 from otp import OTP
 from yubico_exceptions import *
 
+try:
+	import httplib_ssl
+except ImportError:
+	httplib_ssl = None
+
 API_URLS = ('api.yubico.com/wsapi/2.0/verify',
 			'api2.yubico.com/wsapi/2.0/verify',
 			'api3.yubico.com/wsapi/2.0/verify',
@@ -41,11 +46,21 @@ MAX_TIME_WINDOW = 40	# How many seconds can pass between the first and last OTP 
 						# default is 5 seconds (40 / 0.125 = 5)
 
 class Yubico():
-	def __init__(self, client_id, key = None, use_https = True,
-							 translate_otp = True):
+	def __init__(self, client_id, key = None, use_https = True, verify_cert = False, \
+				 translate_otp = True):
+							 	
+		if use_https and not httplib_ssl:
+			raise Exception('SSL support not available')
+			
+		if use_https and httplib_ssl and httplib_ssl.CA_CERTS == '':
+			raise Exception('If you want to validate server certificate, you need to set CA_CERTS '
+							'variable in the httplib_ssl.py file pointing to a file which '
+							'contains a list of trusted CA certificates')
+		
 		self.client_id = client_id
 		self.key = base64.b64decode(key) if key is not None else None
 		self.use_https = use_https
+		self.verify_cert = verify_cert
 		self.translate_otp = translate_otp
 	
 	def verify(self, otp, timestamp = False, sl = None, timeout = None, return_response = False):
@@ -62,7 +77,7 @@ class Yubico():
 		threads = []
 		timeout = timeout or TIMEOUT
 		for url in request_urls:
-			thread = URLThread('%s?%s' % (url, query_string), timeout)
+			thread = URLThread('%s?%s' % (url, query_string), timeout, self.verify_cert)
 			thread.start()
 			threads.append(thread)
 
@@ -237,10 +252,11 @@ class Yubico():
 		return urls
 		
 class URLThread(threading.Thread):
-	def __init__(self, url, timeout):
+	def __init__(self, url, timeout, verify_cert):
 		super(URLThread, self).__init__()
 		self.url = url
 		self.timeout = timeout
+		self.verify_cert = verify_cert
 		self.request = None
 		self.response = None
 		
@@ -250,8 +266,13 @@ class URLThread(threading.Thread):
 	def run(self):
 		socket.setdefaulttimeout(self.timeout)
 		
+		if self.url.startswith('https') and self.verify_cert:
+			handler = httplib_ssl.VerifiedHTTPSHandler()
+			opener = urllib2.build_opener(handler)
+			urllib2.install_opener(opener)
+		
 		try:
 			self.request = urllib2.urlopen(self.url)
 			self.response = self.request.read()
-		except Exception:
+		except Exception, e:
 			self.response = None
