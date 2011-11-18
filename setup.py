@@ -21,25 +21,25 @@ else:
 fp.close()
 
 setup(name = 'yubico',
-	  version = '.' . join(map(str, version)),
-	  description = 'Python Yubico Client',
-	  author = 'Tomaž Muraus',
-	  author_email = 'kami@k5-storitve.net',
-	  license = 'BSD',
-	  url = 'http://github.com/Kami/python-yubico-client/',
-	  download_url = 'http://github.com/Kami/python-yubico-client/downloads/',
-	  packages = ['yubico'],
-	  provides = ['yubico'],
-	  
-	  classifiers = [
-		  'Development Status :: 4 - Beta',
-		  'Environment :: Console',
-		  'Intended Audience :: Developers',
-		  'Intended Audience :: System Administrators',
-		  'License :: OSI Approved :: BSD License',
-		  'Operating System :: OS Independent',
-		  'Programming Language :: Python',
-		  'Topic :: Security',
-		  'Topic :: Software Development :: Libraries :: Python Modules',
-	],
+      version = '.' . join(map(str, version)),
+      description = 'Python Yubico Client',
+      author = 'Tomaž Muraus',
+      author_email = 'kami@k5-storitve.net',
+      license = 'BSD',
+      url = 'http://github.com/Kami/python-yubico-client/',
+      download_url = 'http://github.com/Kami/python-yubico-client/downloads/',
+      packages = ['yubico'],
+      provides = ['yubico'],
+
+      classifiers = [
+          'Development Status :: 4 - Beta',
+          'Environment :: Console',
+          'Intended Audience :: Developers',
+          'Intended Audience :: System Administrators',
+          'License :: OSI Approved :: BSD License',
+          'Operating System :: OS Independent',
+          'Programming Language :: Python',
+          'Topic :: Security',
+          'Topic :: Software Development :: Libraries :: Python Modules',
+    ]
 )
