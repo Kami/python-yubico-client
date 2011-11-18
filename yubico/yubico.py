@@ -3,15 +3,9 @@
 # Name: Yubico Python Client
 # Description: Python class for verifying Yubico One Time Passwords (OTPs).
 #
-# This client is based on the Validation Protocol Version 2.0 so it sends
-# the verification request to all the servers in parallel and it returns when
-# the first positive (STATUS=OK) or negative (STATUS=REPLAYED_OTP) response is
-# received.
-#
 # Author: Tomaž Muraus (http://www.tomaz-muraus.info)
 # License: BSD
-# Version: 1.4
-
+#
 # Requirements:
 # - Python >= 2.5
 
