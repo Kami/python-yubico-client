@@ -20,18 +20,18 @@ else:
     raise Exception('Cannot find version in __init__.py')
 fp.close()
 
-setup(name = 'yubico',
-      version = '.' . join(map(str, version)),
-      description = 'Python Yubico Client',
-      author = 'Tomaž Muraus',
-      author_email = 'kami@k5-storitve.net',
-      license = 'BSD',
-      url = 'http://github.com/Kami/python-yubico-client/',
-      download_url = 'http://github.com/Kami/python-yubico-client/downloads/',
-      packages = ['yubico'],
-      provides = ['yubico'],
+setup(name='yubico',
+      version='.' . join(map(str, version)),
+      description='Python Yubico Client',
+      author='Tomaž Muraus',
+      author_email='kami@k5-storitve.net',
+      license='BSD',
+      url='http://github.com/Kami/python-yubico-client/',
+      download_url='http://github.com/Kami/python-yubico-client/downloads/',
+      packages=['yubico'],
+      provides=['yubico'],
 
-      classifiers = [
+      classifiers=[
           'Development Status :: 4 - Beta',
           'Environment :: Console',
           'Intended Audience :: Developers',

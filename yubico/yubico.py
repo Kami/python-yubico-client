@@ -41,21 +41,25 @@ API_URLS = ('api.yubico.com/wsapi/2.0/verify',
             'api4.yubico.com/wsapi/2.0/verify',
             'api5.yubico.com/wsapi/2.0/verify')
 TIMEOUT = 10            # How long to wait before the time out occurs
-MAX_TIME_WINDOW = 40    # How many seconds can pass between the first and last OTP generations
-                        # so the OTP is still considered valid (only used in the multi mode)
+MAX_TIME_WINDOW = 40    # How many seconds can pass between the first and last
+                        # OTP generations so the OTP is still considered valid
+                        # (only used in the multi mode)
                         # default is 5 seconds (40 / 0.125 = 5)
 
+
 class Yubico():
-    def __init__(self, client_id, key = None, use_https = True, verify_cert = False, \
-                 translate_otp = True):
+    def __init__(self, client_id, key=None, use_https=True, verify_cert=False,
+                 translate_otp=True):
 
         if use_https and not httplib_ssl:
             raise Exception('SSL support not available')
 
         if use_https and httplib_ssl and httplib_ssl.CA_CERTS == '':
-            raise Exception('If you want to validate server certificate, you need to set CA_CERTS '
-                            'variable in the httplib_ssl.py file pointing to a file which '
-                            'contains a list of trusted CA certificates')
+            raise Exception('If you want to validate server certificate,'
+                            ' you need to set CA_CERTS '
+                            'variable in the httplib_ssl.py file pointing '
+                            'to a file which contains a list of trusted CA '
+                            'certificates')
 
         self.client_id = client_id
         self.key = base64.b64decode(key) if key is not None else None
@@ -63,21 +67,25 @@ class Yubico():
         self.verify_cert = verify_cert
         self.translate_otp = translate_otp
 
-    def verify(self, otp, timestamp = False, sl = None, timeout = None, return_response = False):
+    def verify(self, otp, timestamp=False, sl=None, timeout=None,
+               return_response=False):
         """
         Returns True is the provided OTP is valid,
         False if the REPLAYED_OTP status value is returned or the response
-        message signature verification failed and None for the rest of the status values.
+        message signature verification failed and None for the rest of the
+        status values.
         """
         otp = OTP(otp, self.translate_otp)
         nonce = base64.b64encode(os.urandom(30), 'xz')[:25]
-        query_string = self.generate_query_string(otp.otp, nonce, timestamp, sl, timeout)
+        query_string = self.generate_query_string(otp.otp, nonce, timestamp,
+                                                  sl, timeout)
         request_urls = self.generate_request_urls()
 
         threads = []
         timeout = timeout or TIMEOUT
         for url in request_urls:
-            thread = URLThread('%s?%s' % (url, query_string), timeout, self.verify_cert)
+            thread = URLThread('%s?%s' % (url, query_string), timeout,
+                                          self.verify_cert)
             thread.start()
             threads.append(thread)
 
@@ -86,7 +94,8 @@ class Yubico():
         while threads and (start_time + timeout) > time.time():
             for thread in threads:
                 if not thread.is_alive() and thread.response:
-                    status = self.verify_response(thread.response, return_response)
+                    status = self.verify_response(thread.response,
+                                                  return_response)
 
                     if status:
                         if return_response:
@@ -97,7 +106,8 @@ class Yubico():
 
         return None
 
-    def verify_multi(self, otp_list = None, max_time_window = None, sl = None, timeout = None):
+    def verify_multi(self, otp_list=None, max_time_window=None, sl=None,
+                     timeout=None):
         # Create the OTP objects
         otps = []
         for otp in otp_list:
@@ -108,15 +118,16 @@ class Yubico():
             device_ids.add(otp.device_id)
 
         # Check that all the OTPs contain same device id
-        if len (device_ids) != 1:
+        if len(device_ids) != 1:
             return False
 
         # Now we verify the OTPs and save the server response for each OTP.
         # We need the server response, to retrieve the timestamp.
-        # It's possible to retrieve this value locally, without querying the server
-        # but in this case, user would need to provide his AES key.
+        # It's possible to retrieve this value locally, without querying the
+        # server but in this case, user would need to provide his AES key.
         for otp in otps:
-            response = self.verify(otp.otp, True, sl, timeout, return_response = True)
+            response = self.verify(otp.otp, True, sl, timeout,
+                                  return_response=True)
 
             if not response:
                 return False
@@ -126,38 +137,46 @@ class Yubico():
         count = len(otps)
         delta = otps[count - 1].timestamp - otps[0].timestamp
 
-        max_time_window = (max_time_window / 0.125) if max_time_window else None
-        max_time_window = max_time_window or MAX_TIME_WINDOW
+        if max_time_window:
+            max_time_window = (max_time_window / 0.125)
+        else:
+            max_time_window = MAX_TIME_WINDOW
+
         if delta > max_time_window:
             return False
 
         return True
 
-    def verify_response(self, response, return_response = False):
+    def verify_response(self, response, return_response=False):
         """
-        Returns True if the OTP is valid (status=OK) and return_response = False,
-        otherwise (return_response = True) it returns the server response as a dictionary.
+        Returns True if the OTP is valid (status=OK) and return_response=False,
+        otherwise (return_response = True) it returns the server response as a
+        dictionary.
 
         Throws an exception if the OTP is replayed, the server response message
-        verification failed or the client id is invalid, returns False otherwise.
+        verification failed or the client id is invalid, returns False
+        otherwise.
         """
         try:
             try:
                 status = re.search(r'status=([a-zA-Z0-9_]+)', response) \
                                      .groups()[0]
-            except AttributeError, IndexError:
+            except (AttributeError, IndexError):
                 return False
 
             # Secret key is specified, so we verify the response message
             # signature
             if self.key != None:
-                signature, parameters = self.parse_parameters_from_response(response)
-                generated_signature = self.generate_message_signature(parameters)
+                signature, parameters = \
+                        self.parse_parameters_from_response(response)
+                generated_signature = \
+                        self.generate_message_signature(parameters)
 
-                # Signature located in the response does not match the one we have
-                # generated
+                # Signature located in the response does not match the one we
+                # have generated
                 if signature != generated_signature:
-                    raise SignatureVerificationError(generated_signature, signature)
+                    raise SignatureVerificationError(generated_signature,
+                                                     signature)
         except KeyError:
             # Missing status code, malformed response?
             return False
@@ -177,7 +196,8 @@ class Yubico():
 
         return False
 
-    def generate_query_string(self, otp, nonce, timestamp = False, sl = None, timeout = None):
+    def generate_query_string(self, otp, nonce, timestamp=False, sl=None,
+                              timeout=None):
         """
         Returns a query string which is sent to the validation servers.
         """
@@ -189,8 +209,9 @@ class Yubico():
             data.append(('timestamp', '1'))
 
         if sl:
-            if sl not in range(0,101) and sl not in ['fast', 'secure']:
-                raise Exception('sl parameter value must be between 0 and 100 or string "fast" or "secure"')
+            if sl not in range(0, 101) and sl not in ['fast', 'secure']:
+                raise Exception('sl parameter value must be between 0 and '
+                                 '100 or string "fast" or "secure"')
 
             data.append(('sl', sl))
 
@@ -208,7 +229,7 @@ class Yubico():
     def generate_message_signature(self, query_string):
         """
         Returns a HMAC-SHA-1 signature for the given query string.
-        http://code.google.com/p/yubikey-val-server-php/wiki/ValidationProtocolV20
+        http://goo.gl/R4O0E
         """
         pairs = query_string.split('&')
         pairs = [pair.split('=') for pair in pairs]
@@ -222,9 +243,11 @@ class Yubico():
 
     def parse_parameters_from_response(self, response):
         """
-        Returns a response signature and query string generated from the server response.
+        Returns a response signature and query string generated from the
+        server response.
         """
-        splitted = [pair.strip() for pair in response.split('\n') if pair.strip() != '']
+        splitted = [pair.strip() for pair in response.split('\n')
+                    if pair.strip() != '']
         signature = splitted[0].replace('h=', '')
         query_string = '&' . join(splitted[1:])
 
@@ -251,6 +274,7 @@ class Yubico():
 
         return urls
 
+
 class URLThread(threading.Thread):
     def __init__(self, url, timeout, verify_cert):
         super(URLThread, self).__init__()
@@ -274,5 +298,5 @@ class URLThread(threading.Thread):
         try:
             self.request = urllib2.urlopen(self.url)
             self.response = self.request.read()
-        except Exception, e:
+        except Exception:
             self.response = None
