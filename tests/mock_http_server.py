@@ -1,5 +1,12 @@
+#!/usr/bin/env python
+
+import os
 import time
+import sys
 import BaseHTTPServer
+
+from os.path import join as pjoin
+sys.path.append(pjoin(os.path.dirname(__file__), '../'))
 
 from yubico.yubico import BAD_STATUS_CODES
 
