@@ -34,11 +34,17 @@ API_URLS = ('api.yubico.com/wsapi/2.0/verify',
             'api3.yubico.com/wsapi/2.0/verify',
             'api4.yubico.com/wsapi/2.0/verify',
             'api5.yubico.com/wsapi/2.0/verify')
+
 TIMEOUT = 10            # How long to wait before the time out occurs
 MAX_TIME_WINDOW = 40    # How many seconds can pass between the first and last
                         # OTP generations so the OTP is still considered valid
                         # (only used in the multi mode)
                         # default is 5 seconds (40 / 0.125 = 5)
+
+BAD_STATUS_CODES = ['BAD_OTP', 'REPLAYED_OTP', 'BAD_SIGNATURE',
+                    'MISSING_PARAMETER', 'OPERATION_NOT_ALLOWED',
+                    'BACKEND_ERROR', 'NOT_ENOUGH_ANSWERS',
+                    'REPLAYED_REQUEST']
 
 
 class Yubico():
@@ -185,8 +191,8 @@ class Yubico():
                 return True
         elif status == 'NO_SUCH_CLIENT':
             raise InvalidClientIdError(self.client_id)
-        elif status == 'REPLAYED_OTP':
-            raise StatusCodeError('REPLAYED_OTP')
+        elif status in BAD_STATUS_CODES:
+            raise StatusCodeError(status)
 
         return False
 
