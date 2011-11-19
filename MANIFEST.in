@@ -1,0 +1,5 @@
+include LICENSE
+include NOTICE
+include CHANGES
+include README.md
+include tests/*.py
