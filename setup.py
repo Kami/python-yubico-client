@@ -3,7 +3,15 @@
 import os
 import re
 import sys
+
+from glob import glob
+from os.path import splitext, basename, join as pjoin
+from unittest import TextTestRunner, TestLoader
+
 from distutils.core import setup
+from distutils.core import Command
+
+TEST_PATHS = ['tests']
 
 pre_python26 = (sys.version_info[0] == 2 and sys.version_info[1] < 6)
 
@@ -23,6 +31,39 @@ else:
     raise Exception('Cannot find version in __init__.py')
 fp.close()
 
+
+class TestCommand(Command):
+    description = 'run test suite'
+    user_options = []
+
+    def initialize_options(self):
+        THIS_DIR = os.path.abspath(os.path.split(__file__)[0])
+        sys.path.insert(0, THIS_DIR)
+        for test_path in TEST_PATHS:
+            sys.path.insert(0, pjoin(THIS_DIR, test_path))
+        self._dir = os.getcwd()
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        status = self._run_tests()
+        sys.exit(status)
+
+    def _run_tests(self):
+        testfiles = []
+        for test_path in TEST_PATHS:
+            for t in glob(pjoin(self._dir, test_path, 'test_*.py')):
+                testfiles.append('.'.join(
+                    [test_path.replace('/', '.'), splitext(basename(t))[0]]))
+
+        tests = TestLoader().loadTestsFromNames(testfiles)
+
+        t = TextTestRunner(verbosity=2)
+        res = t.run(tests)
+        return not res.wasSuccessful()
+
+
 setup(name='yubico',
       version='.' . join(map(str, version)),
       description='Python Yubico Client',
@@ -34,6 +75,9 @@ setup(name='yubico',
       packages=['yubico'],
       provides=['yubico'],
       requires=([], ['ssl'],)[pre_python26],
+      cmdclass={
+          'test': TestCommand,
+      },
 
 
       classifiers=[
