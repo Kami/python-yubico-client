@@ -125,7 +125,7 @@ class Yubico():
 
         # Check that all the OTPs contain same device id
         if len(device_ids) != 1:
-            return False
+            raise Exceptions('OTPs contain different device ids')
 
         # Now we verify the OTPs and save the server response for each OTP.
         # We need the server response, to retrieve the timestamp.
@@ -149,7 +149,9 @@ class Yubico():
             max_time_window = DEFAULT_MAX_TIME_WINDOW
 
         if delta > max_time_window:
-            return False
+            raise Exception('More then %s seconds has passed between ' +
+                            'generating the first and the last OTP.' %
+                            (max_time_window * 0.125))
 
         return True
 
