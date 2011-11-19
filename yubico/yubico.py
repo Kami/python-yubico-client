@@ -104,7 +104,8 @@ class Yubico():
                             return True
                     threads.remove(thread)
 
-        return None
+        # Timeout or no valid response received
+        raise Exception('NO_VALID_ANSWERS')
 
     def verify_multi(self, otp_list=None, max_time_window=None, sl=None,
                      timeout=None):
@@ -187,7 +188,7 @@ class Yubico():
                 return True
         elif status == 'NO_SUCH_CLIENT':
             raise InvalidClientIdError(self.client_id)
-        elif status in BAD_STATUS_CODES:
+        elif status == 'REPLAYED_OTP':
             raise StatusCodeError(status)
 
         return False
