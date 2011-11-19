@@ -25,7 +25,7 @@ class TestYubicoVerifySingle(unittest.TestCase):
         yubico.API_URLS = (
                 '127.0.0.1:8888/wsapi/2.0/verify',
                 )
-        yubico.TIMEOUT = 0.5
+        yubico.DEFAULT_TIMEOUT = 0.5
 
         self.client_no_verify_sig = yubico.Yubico('1234', None,
                                                   use_https=False)
