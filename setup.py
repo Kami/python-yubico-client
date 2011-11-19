@@ -68,7 +68,7 @@ class TestCommand(Command):
         return not res.wasSuccessful()
 
     def _run_mock_api_server(self):
-        server = MockAPIServerRunner()
+        server = MockAPIServerRunner(port=8881)
         server.setUp()
 
 

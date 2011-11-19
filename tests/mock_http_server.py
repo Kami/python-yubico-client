@@ -5,6 +5,7 @@ import time
 import sys
 import BaseHTTPServer
 
+from optparse import OptionParser
 from os.path import join as pjoin
 sys.path.append(pjoin(os.path.dirname(__file__), '../'))
 
@@ -74,8 +75,15 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 
 def main():
+    usage = 'usage: %prog --port=<port>'
+    parser = OptionParser(usage=usage)
+    parser.add_option("--port", dest='port', default=8881,
+                  help='Port to listen on', metavar='PORT')
+
+    (options, args) = parser.parse_args()
+
     server_class = BaseHTTPServer.HTTPServer
-    httpd = server_class(('127.0.0.1', 8888), Handler)
+    httpd = server_class(('127.0.0.1', int(options.port)), Handler)
 
     try:
         httpd.serve_forever()

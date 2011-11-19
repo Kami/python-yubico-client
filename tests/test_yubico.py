@@ -23,7 +23,7 @@ class TestOTPClass(unittest.TestCase):
 class TestYubicoVerifySingle(unittest.TestCase):
     def setUp(self):
         yubico.API_URLS = (
-                '127.0.0.1:8888/wsapi/2.0/verify',
+                '127.0.0.1:8881/wsapi/2.0/verify',
                 )
         yubico.DEFAULT_TIMEOUT = 0.5
 
@@ -91,13 +91,13 @@ class TestYubicoVerifySingle(unittest.TestCase):
         status = self.client_verify_sig.verify('test')
         self.assertTrue(status)
 
-    def _set_mock_action(self, action, signature=None):
+    def _set_mock_action(self, action, port=8881, signature=None):
         path = '/set_mock_action?action=%s' % (action)
 
         if signature:
             path += '&signature=%s' % (signature)
 
-        conn = httplib.HTTPConnection('127.0.0.1:8888')
+        conn = httplib.HTTPConnection('127.0.0.1:' + str(port))
         conn.request('GET', path)
 
         try:
