@@ -20,6 +20,7 @@ import hmac
 import base64
 import hashlib
 import threading
+import logging
 
 from otp import OTP
 from yubico_exceptions import *
@@ -28,6 +29,10 @@ try:
     import httplib_ssl
 except ImportError:
     httplib_ssl = None
+
+logger = logging.getLogger('face')
+FORMAT = '%(asctime)-15s [%(levelname)s] %(message)s'
+logging.basicConfig(format=FORMAT)
 
 API_URLS = ('api.yubico.com/wsapi/2.0/verify',
             'api2.yubico.com/wsapi/2.0/verify',
@@ -285,6 +290,8 @@ class URLThread(threading.Thread):
             self.is_alive = self.isAlive
 
     def run(self):
+        logger.debug('Sending HTTP request to %s (thread=%s)' % (self.url,
+                                                                 self.name))
         socket.setdefaulttimeout(self.timeout)
 
         if self.url.startswith('https') and self.verify_cert:
@@ -297,3 +304,7 @@ class URLThread(threading.Thread):
             self.response = self.request.read()
         except Exception:
             self.response = None
+
+        logger.debug('Received response from %s (thread=%s): %s' % (self.url,
+                                                               self.name,
+                                                               self.response))
