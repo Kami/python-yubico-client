@@ -84,6 +84,7 @@ def main():
 
     server_class = BaseHTTPServer.HTTPServer
     httpd = server_class(('127.0.0.1', int(options.port)), Handler)
+    print 'Mock API server listening on 127.0.0.1:%s' % (options.port)
 
     try:
         httpd.serve_forever()

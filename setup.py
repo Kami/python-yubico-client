@@ -68,8 +68,9 @@ class TestCommand(Command):
         return not res.wasSuccessful()
 
     def _run_mock_api_server(self):
-        server = MockAPIServerRunner(port=8881)
-        server.setUp()
+        for port in [8881, 8882, 8883]:
+            server = MockAPIServerRunner(port=port)
+            server.setUp()
 
 
 setup(name='yubico',

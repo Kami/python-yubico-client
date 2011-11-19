@@ -1,6 +1,7 @@
 from __future__ import with_statement
 
 import os
+import sys
 import subprocess
 import signal
 import time
@@ -80,7 +81,7 @@ class ProcessRunner(object):
 
 class MockAPIServerRunner(ProcessRunner):
     def __init__(self, port=8881):
-      self.port = port
+        self.port = port
 
     def setUp(self, *args, **kwargs):
         self.cwd = os.getcwd()
@@ -93,9 +94,9 @@ class MockAPIServerRunner(ProcessRunner):
         script = pjoin(os.path.dirname(__file__), 'mock_http_server.py')
 
         with open(self.log_path, 'a+') as log_fp:
-            self.process = subprocess.Popen([script], shell=True,
-                    cwd=self.base_dir,
-                    stdout=log_fp, stderr=log_fp)
+            args = '%s --port=%s' % (script, str(self.port))
+            self.process = subprocess.Popen(args, shell=True,
+                    cwd=self.base_dir, stdout=log_fp, stderr=log_fp)
             waitForStartUp(self.process, self.getPid(),
                            ('127.0.0.1', self.port), 10)
         atexit.register(self.tearDown)
