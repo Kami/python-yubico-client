@@ -158,28 +158,24 @@ class Yubico():
         otherwise.
         """
         try:
-            try:
-                status = re.search(r'status=([a-zA-Z0-9_]+)', response) \
-                                     .groups()[0]
-            except (AttributeError, IndexError):
-                return False
-
-            # Secret key is specified, so we verify the response message
-            # signature
-            if self.key != None:
-                signature, parameters = \
-                        self.parse_parameters_from_response(response)
-                generated_signature = \
-                        self.generate_message_signature(parameters)
-
-                # Signature located in the response does not match the one we
-                # have generated
-                if signature != generated_signature:
-                    raise SignatureVerificationError(generated_signature,
-                                                     signature)
-        except KeyError:
-            # Missing status code, malformed response?
+            status = re.search(r'status=([a-zA-Z0-9_]+)', response) \
+                                 .groups()[0]
+        except (AttributeError, IndexError):
             return False
+
+        # Secret key is specified, so we verify the response message
+        # signature
+        if self.key:
+            signature, parameters = \
+                    self.parse_parameters_from_response(response)
+            generated_signature = \
+                    self.generate_message_signature(parameters)
+
+            # Signature located in the response does not match the one we
+            # have generated
+            if signature != generated_signature:
+                raise SignatureVerificationError(generated_signature,
+                                                 signature)
 
         if status == 'OK':
             if return_response:
