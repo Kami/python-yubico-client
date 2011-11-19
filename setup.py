@@ -11,6 +11,9 @@ from unittest import TextTestRunner, TestLoader
 from distutils.core import setup
 from distutils.core import Command
 
+sys.path.insert(0, pjoin(os.path.dirname(__file__)))
+from tests.utils import MockAPIServerRunner
+
 TEST_PATHS = ['tests']
 
 pre_python26 = (sys.version_info[0] == 2 and sys.version_info[1] < 6)
@@ -47,6 +50,7 @@ class TestCommand(Command):
         pass
 
     def run(self):
+        self._run_mock_api_server()
         status = self._run_tests()
         sys.exit(status)
 
@@ -62,6 +66,10 @@ class TestCommand(Command):
         t = TextTestRunner(verbosity=2)
         res = t.run(tests)
         return not res.wasSuccessful()
+
+    def _run_mock_api_server(self):
+        server = MockAPIServerRunner()
+        server.setUp()
 
 
 setup(name='yubico',
