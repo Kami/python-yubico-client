@@ -1,0 +1,93 @@
+import sys
+import unittest
+import httplib
+import urllib
+
+from yubico import yubico
+from yubico.otp import OTP
+from yubico.yubico_exceptions import StatusCodeError, InvalidClientIdError
+from yubico.yubico_exceptions import SignatureVerificationError
+
+
+class TestYubico(unittest.TestCase):
+    def setUp(self):
+        yubico.API_URLS = (
+                '127.0.0.1:8888/wsapi/2.0/verify',
+                )
+        yubico.TIMEOUT = 0.5
+
+        self.client_no_verify_sig = yubico.Yubico('1234', None,
+                                                  use_https=False)
+        self.client_verify_sig = yubico.Yubico('1234', 'secret123456',
+                                               use_https=False)
+
+    def test_otp_class(self):
+        otp = OTP('tlerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbl')
+        self.assertEqual(otp.device_id, 'tlerefhcvijl')
+
+    def test_verify_bad_status_codes(self):
+        for status in yubico.BAD_STATUS_CODES:
+            self._set_mock_action(status)
+            try:
+                self.client_no_verify_sig.verify('bad')
+            except StatusCodeError, e:
+                self.assertEqual(e.status_code, status)
+            else:
+                self.fail('Exception was not thrown')
+
+    def test_verify_local_timeout(self):
+        self._set_mock_action('timeout')
+
+        self.assertEqual(self.client_no_verify_sig.verify('bad'), None)
+
+    def test_verify_invalid_signature(self):
+        self._set_mock_action('no_signature_ok')
+
+        try:
+            self.client_verify_sig.verify('test')
+        except SignatureVerificationError:
+            pass
+        else:
+            self.fail('Exception was not thrown')
+
+    def test_verify_NO_SUCH_CLIENT(self):
+        self._set_mock_action('no_such_client')
+
+        try:
+            self.client_no_verify_sig.verify('test')
+        except InvalidClientIdError, e:
+            self.assertEqual(e.client_id, '1234')
+        else:
+            self.fail('Exception was not thrown')
+
+    def test_verify_ok_dont_check_signature(self):
+        self._set_mock_action('no_signature_ok')
+
+        status = self.client_no_verify_sig.verify('test')
+        self.assertTrue(status)
+
+    def test_verify_ok_check_signature(self):
+        signature = \
+            self.client_verify_sig.generate_message_signature('status=OK')
+        self._set_mock_action('ok_signature', signature=signature)
+
+        status = self.client_verify_sig.verify('test')
+        self.assertTrue(status)
+
+    def _set_mock_action(self, action, signature=None):
+        path = '/set_mock_action?action=%s' % (action)
+
+        if signature:
+            path += '&signature=%s' % (signature)
+
+        conn = httplib.HTTPConnection('127.0.0.1:8888')
+        conn.request('GET', path)
+
+        try:
+            conn.getresponse()
+        except:
+            pass
+
+
+if __name__ == '__main__':
+    sys.exit(unittest.main())
