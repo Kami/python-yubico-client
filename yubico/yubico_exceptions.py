@@ -1,3 +1,11 @@
+__all___ = [
+    'YubicoError',
+    'StatusCodeError',
+    'InvalidClientIdError',
+    'SignatureVerificationError'
+]
+
+
 class YubicoError(Exception):
     """ Base class for Yubico related exceptions. """
     pass
