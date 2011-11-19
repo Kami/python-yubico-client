@@ -2,7 +2,10 @@
 # -*- coding: utf-8 -*-
 import os
 import re
+import sys
 from distutils.core import setup
+
+pre_python26 = (sys.version_info[0] == 2 and sys.version_info[1] < 6)
 
 version_re = re.compile(
     r'__version__ = (\(.*?\))')
@@ -30,6 +33,8 @@ setup(name='yubico',
       download_url='http://github.com/Kami/python-yubico-client/downloads/',
       packages=['yubico'],
       provides=['yubico'],
+      requires=([], ['ssl'],)[pre_python26],
+
 
       classifiers=[
           'Development Status :: 4 - Beta',
