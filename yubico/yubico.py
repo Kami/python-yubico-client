@@ -166,8 +166,12 @@ class Yubico():
         otherwise.
         """
         try:
-            status = re.search(r'status=([a-zA-Z0-9_]+)', response) \
-                                 .groups()[0]
+            status = re.search(r'status=([A-Z0-9_]+)', response) \
+                                 .groups()
+            if len(status) > 1:
+                raise InvalidValidationResponse('More than one status= returned. Possible attack!',
+                                                response)
+            status = status[0]
         except (AttributeError, IndexError):
             return False
 

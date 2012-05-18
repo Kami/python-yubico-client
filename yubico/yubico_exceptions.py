@@ -27,6 +27,14 @@ class InvalidClientIdError(YubicoError):
     def __str__(self):
         return 'The client with ID %s does not exist' % (self.client_id)
 
+class InvalidValidationResponse(YubicoError):
+    def __init__(self, reason, response):
+        self.reason = reason
+        self.response = response
+
+    def __str__(self):
+        return self.reason
+
 
 class SignatureVerificationError(YubicoError):
     def __init__(self, generated_signature, response_signature):
