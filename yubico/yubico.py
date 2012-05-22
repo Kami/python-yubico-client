@@ -193,10 +193,10 @@ class Yubico():
 
         param_dict = self.get_parameters_as_dictionary(parameters)
 
-        if param_dict['otp'] != otp:
+        if param_dict.get('otp', otp) != otp:
             raise InvalidValidationResponse('Unexpected OTP in response. Possible attack!',
                                             response, param_dict)
-        if param_dict['nonce'] != nonce:
+        if param_dict.get('nonce', nonce) != nonce:
             raise InvalidValidationResponse('Unexpected nonce in response. Possible attack!',
                                             response, param_dict)
 
