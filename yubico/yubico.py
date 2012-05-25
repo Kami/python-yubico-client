@@ -6,6 +6,10 @@
 # Author: Tomaž Muraus (http://www.tomaz-muraus.info)
 # License: BSD
 #
+# Copyright (c) 2010, Tomaž Muraus
+# Copyright (c) 2012, Yubico AB
+# All rights reserved.
+#
 # Requirements:
 # - Python >= 2.5
 
@@ -100,6 +104,7 @@ class Yubico():
             for thread in threads:
                 if not thread.is_alive() and thread.response:
                     status = self.verify_response(thread.response,
+                                                  otp.otp, nonce,
                                                   return_response)
 
                     if status:
@@ -155,7 +160,7 @@ class Yubico():
 
         return True
 
-    def verify_response(self, response, return_response=False):
+    def verify_response(self, response, otp, nonce, return_response=False):
         """
         Returns True if the OTP is valid (status=OK) and return_response=False,
         otherwise (return_response = True) it returns the server response as a
@@ -166,16 +171,21 @@ class Yubico():
         otherwise.
         """
         try:
-            status = re.search(r'status=([a-zA-Z0-9_]+)', response) \
-                                 .groups()[0]
+            status = re.search(r'status=([A-Z0-9_]+)', response) \
+                                 .groups()
+            if len(status) > 1:
+                raise InvalidValidationResponse('More than one status= returned. Possible attack!',
+                                                response)
+            status = status[0]
         except (AttributeError, IndexError):
             return False
+
+        signature, parameters = \
+            self.parse_parameters_from_response(response)
 
         # Secret key is specified, so we verify the response message
         # signature
         if self.key:
-            signature, parameters = \
-                    self.parse_parameters_from_response(response)
             generated_signature = \
                     self.generate_message_signature(parameters)
 
@@ -185,12 +195,18 @@ class Yubico():
                 raise SignatureVerificationError(generated_signature,
                                                  signature)
 
+        param_dict = self.get_parameters_as_dictionary(parameters)
+
+        if param_dict.get('otp', otp) != otp:
+            raise InvalidValidationResponse('Unexpected OTP in response. Possible attack!',
+                                            response, param_dict)
+        if param_dict.get('nonce', nonce) != nonce:
+            raise InvalidValidationResponse('Unexpected nonce in response. Possible attack!',
+                                            response, param_dict)
+
         if status == 'OK':
             if return_response:
-                query_string = self.parse_parameters_from_response(response)[1]
-                response = self.get_parameters_as_dictionary(query_string)
-
-                return response
+                return param_dict
             else:
                 return True
         elif status == 'NO_SUCH_CLIENT':
