@@ -108,6 +108,7 @@ class Yubico():
                         else:
                             return True
                     threads.remove(thread)
+            time.sleep(0.1)
 
         # Timeout or no valid response received
         raise Exception('NO_VALID_ANSWERS')
