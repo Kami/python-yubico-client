@@ -6,6 +6,10 @@
 # Author: Tomaž Muraus (http://www.tomaz-muraus.info)
 # License: BSD
 #
+# Copyright (c) 2010, Tomaž Muraus
+# Copyright (c) 2012, Yubico AB
+# All rights reserved.
+#
 # Requirements:
 # - Python >= 2.5
 
