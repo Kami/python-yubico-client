@@ -14,7 +14,7 @@ validation protocol version 2.0.
 
 ## Build Status
 
-[![Build Status](https://secure.travis-ci.org/kami/python-yubico-client.png)](http://travis-ci.org/kami/python-yubico-client)
+[![Build Status](https://secure.travis-ci.org/Kami/python-yubico-client.png)](http://travis-ci.org/Kami/python-yubico-client)
 
 ## Running Tests
 
