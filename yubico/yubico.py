@@ -3,7 +3,7 @@
 # Name: Yubico Python Client
 # Description: Python class for verifying Yubico One Time Passwords (OTPs).
 #
-# Author: Tomaž Muraus (http://www.tomaz-muraus.info)
+# Author: Tomaž Muraus (http://www.tomaz.me)
 # License: BSD
 #
 # Copyright (c) 2010, Tomaž Muraus
