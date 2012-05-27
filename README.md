@@ -8,6 +8,18 @@ validation protocol version 2.0.
 * Validation Protocol Version 2.0 FAQ: [http://www.yubico.com/developers/version2/][3]
 * Validation Protocol Version 2.0 description: [http://code.google.com/p/yubikey-val-server-php/wiki/ValidationProtocolV20][4]
 
+## Installation
+
+`pip install yubico`
+
+## Build Status
+
+[![Build Status](https://secure.travis-ci.org/kami/python-yubico-client.png)](http://travis-ci.org/kami/python-yubico-client)
+
+## Running Tests
+
+`python setup.py test`
+
 ## Usage
 
 1. Generate your client id and secret key (this can be done by visiting the
