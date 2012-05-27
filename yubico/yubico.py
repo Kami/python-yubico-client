@@ -194,13 +194,12 @@ class Yubico():
             if signature != generated_signature:
                 raise SignatureVerificationError(generated_signature,
                                                  signature)
-
         param_dict = self.get_parameters_as_dictionary(parameters)
 
-        if param_dict.get('otp', otp) != otp:
+        if 'otp' in param_dict and param_dict['dict'] != otp:
             raise InvalidValidationResponse('Unexpected OTP in response. Possible attack!',
                                             response, param_dict)
-        if param_dict.get('nonce', nonce) != nonce:
+        if 'nonce' in param_dict and param_dict['nonce'] != nonce:
             raise InvalidValidationResponse('Unexpected nonce in response. Possible attack!',
                                             response, param_dict)
 
