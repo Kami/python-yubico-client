@@ -263,18 +263,32 @@ class Yubico():
     def parse_parameters_from_response(self, response):
         """
         Returns a response signature and query string generated from the
-        server response.
+        server response. 'h' aka signature argument is stripped from the
+        returned query string.
         """
-        splitted = [pair.strip() for pair in response.split('\n')
-                    if pair.strip() != '']
-        signature = splitted[0].replace('h=', '')
-        query_string = '&' . join(splitted[1:])
+        split = [pair.strip() for pair in response.split('\n')
+                 if pair.strip() != '']
+        query_string = '&' . join(split)
+        split_dict = self.get_parameters_as_dictionary(query_string)
+
+        if 'h' in split_dict:
+            signature = split_dict['h']
+            del split_dict['h']
+        else:
+            signature = None
+
+        query_string = ''
+        for index, (key, value) in enumerate(split_dict.iteritems()):
+            query_string += '%s=%s' % (key, value)
+
+            if index != len(split_dict) -1:
+                query_string += '&'
 
         return (signature, query_string)
 
     def get_parameters_as_dictionary(self, query_string):
         """ Returns query string parameters as a dictionary. """
-        dictionary = dict([parameter.split('=') for parameter \
+        dictionary = dict([parameter.split('=', 1) for parameter \
                     in query_string.split('&')])
 
         return dictionary
