@@ -227,7 +227,7 @@ class Yubico():
         if timestamp:
             data.append(('timestamp', '1'))
 
-        if sl:
+        if sl is not None:
             if sl not in range(0, 101) and sl not in ['fast', 'secure']:
                 raise Exception('sl parameter value must be between 0 and '
                                  '100 or string "fast" or "secure"')
