@@ -31,12 +31,12 @@ common_ca_file_locations = [
 ]
 
 if os.getenv('SSL_CERT_FILE', False) and os.path.exists(os.environ['SSL_CERT_FILE']):
-	CA_CERTS = os.environ['SSL_CERT_FILE']
+    CA_CERTS = os.environ['SSL_CERT_FILE']
 else:
     for location in common_ca_file_locations:
-	if os.path.exists(location):
-	    CA_CERTS = location
-	    break
+        if os.path.exists(location):
+           CA_CERTS = location
+           break
 
 class VerifiedHTTPSConnection(httplib.HTTPSConnection):
     def connect(self):
