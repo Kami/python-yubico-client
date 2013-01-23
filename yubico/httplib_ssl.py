@@ -1,13 +1,42 @@
 # Based on example from post "HTTPS Certificate Verification in Python With urllib2" -
 # http://www.muchtooscrawled.com/2010/03/https-certificate-verification-in-python-with-urllib2/
 
+import os
 import socket
 import ssl
 import httplib
 import urllib2
 
-# Path to a file containing trusted CA certificates
-CA_CERTS = ''
+common_ca_file_locations = [
+    '/usr/local/lib/ssl/certs/ca-certificates.crt',
+    '/usr/local/ssl/certs/ca-certificates.crt',
+    '/usr/local/share/curl/curl-ca-bundle.crt',
+    '/usr/local/etc/openssl/cert.pem',
+    '/opt/local/lib/ssl/certs/ca-certificates.crt',
+    '/opt/local/ssl/certs/ca-certificates.crt',
+    '/opt/local/share/curl/curl-ca-bundle.crt',
+    '/opt/local/etc/openssl/cert.pem',
+    '/usr/lib/ssl/certs/ca-certificates.crt',
+    '/usr/ssl/certs/ca-certificates.crt',
+    '/usr/share/curl/curl-ca-bundle.crt',
+    '/etc/ssl/certs/ca-certificates.crt',
+    '/etc/pki/tls/cert.pem',
+    '/etc/pki/CA/cacert.pem',
+    'C:\Windows\curl-ca-bundle.crt',
+    'C:\Windows\ca-bundle.crt',
+    'C:\Windows\cacert.pem',
+    './curl-ca-bundle.crt',
+    './cacert.pem',
+    '~/.cacert.pem'
+]
+
+if os.getenv('SSL_CERT_FILE', False) and os.path.exists(os.environ['SSL_CERT_FILE']):
+	CA_CERTS = os.environ['SSL_CERT_FILE']
+else:
+    for location in common_ca_file_locations:
+	if os.path.exists(location):
+	    CA_CERTS = location
+	    break
 
 class VerifiedHTTPSConnection(httplib.HTTPSConnection):
     def connect(self):
