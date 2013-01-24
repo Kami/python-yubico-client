@@ -8,15 +8,13 @@ from glob import glob
 from os.path import splitext, basename, join as pjoin
 from unittest import TextTestRunner, TestLoader
 
-from distutils.core import setup
+from setuptools import setup
 from distutils.core import Command
 
 sys.path.insert(0, pjoin(os.path.dirname(__file__)))
 from tests.utils import MockAPIServerRunner
 
 TEST_PATHS = ['tests']
-
-pre_python26 = (sys.version_info[0] == 2 and sys.version_info[1] < 6)
 
 version_re = re.compile(
     r'__version__ = (\(.*?\))')
@@ -76,19 +74,19 @@ class TestCommand(Command):
 setup(name='yubico',
       version='.' . join(map(str, version)),
       description='Python Yubico Client',
-      author='Tomaž Muraus',
+      author='Tomaz Muraus',
       author_email='tomaz+pypi@tomaz.me',
       license='BSD',
       url='http://github.com/Kami/python-yubico-client/',
       download_url='http://github.com/Kami/python-yubico-client/downloads/',
       packages=['yubico'],
       provides=['yubico'],
-      requires=([], ['ssl'],)[pre_python26],
+      install_requires=[
+        'requests == 1.1.0',
+      ],
       cmdclass={
           'test': TestCommand,
       },
-
-
       classifiers=[
           'Development Status :: 4 - Beta',
           'Environment :: Console',

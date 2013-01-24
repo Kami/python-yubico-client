@@ -59,13 +59,6 @@ Both methods can also throw one of the following exceptions:
   **REPLAYED_REQUEST** or no response was received from any of the servers
   in the specified time frame (default timeout = 10 seconds)
 
-## Notes
-
-If you are using secure connection (https) and want to validate the server certificate, you need to pass ``verify_cert = True`` argument when instantiating the yubico class and set ``CA_CERTS`` variable in the
-``yubico/httplib_ssl.py`` file so it points to a file containing trusted CA certificates.
-
-For a backward compatibility, ``verify_cert`` is set to ``False`` by default.
-
 [1]: http://www.yubico.com
 [2]: http://www.yubico.com/developers/intro/
 [3]: http://www.yubico.com/developers/version2/

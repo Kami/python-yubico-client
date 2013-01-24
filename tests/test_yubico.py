@@ -1,7 +1,7 @@
 import sys
 import unittest
-import httplib
-import urllib
+
+import requests
 
 from yubico import yubico
 from yubico.otp import OTP
@@ -13,7 +13,7 @@ class TestOTPClass(unittest.TestCase):
     def test_otp_class(self):
         otp1 = OTP('tlerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbl')
         otp2 = OTP('jjjjjjjjnhe.ngcgjeiuujjjdtgihjuecyixinxunkhj',
-                  translate_otp=True)
+                   translate_otp=True)
 
         self.assertEqual(otp1.device_id, 'tlerefhcvijl')
         self.assertEqual(otp2.otp,
@@ -22,15 +22,29 @@ class TestOTPClass(unittest.TestCase):
 
 class TestYubicoVerifySingle(unittest.TestCase):
     def setUp(self):
-        yubico.API_URLS = (
-                '127.0.0.1:8881/wsapi/2.0/verify',
-                )
+        yubico.API_URLS = ('127.0.0.1:8881/wsapi/2.0/verify',)
         yubico.DEFAULT_TIMEOUT = 2
+        yubico.CA_CERTS_BUNDLE_PATH = None
 
         self.client_no_verify_sig = yubico.Yubico('1234', None,
                                                   use_https=False)
         self.client_verify_sig = yubico.Yubico('1234', 'secret123456',
                                                use_https=False)
+
+    def test_invalid_custom_ca_certs_path(self):
+        if hasattr(sys, 'pypy_version_info'):
+            # TODO: Figure out why this breaks PyPy
+            return
+
+        yubico.CA_CERTS_BUNDLE_PATH = '/does/not/exist.1'
+        client = yubico.Yubico('1234', 'secret123456')
+
+        try:
+            client.verify('bad')
+        except requests.exceptions.SSLError:
+            pass
+        else:
+            self.fail('SSL exception was not thrown')
 
     def test_replayed_otp(self):
         self._set_mock_action('REPLAYED_OTP')
@@ -97,13 +111,7 @@ class TestYubicoVerifySingle(unittest.TestCase):
         if signature:
             path += '&signature=%s' % (signature)
 
-        conn = httplib.HTTPConnection('127.0.0.1:' + str(port))
-        conn.request('GET', path)
-
-        try:
-            conn.getresponse()
-        except:
-            pass
+        requests.get(url='http://127.0.0.1:%s%s' % (port, path))
 
 
 if __name__ == '__main__':
