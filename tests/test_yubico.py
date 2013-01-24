@@ -1,7 +1,8 @@
 import sys
 import unittest
 import httplib
-import urllib
+
+import requests
 
 from yubico import yubico
 from yubico.otp import OTP
@@ -26,11 +27,23 @@ class TestYubicoVerifySingle(unittest.TestCase):
                 '127.0.0.1:8881/wsapi/2.0/verify',
                 )
         yubico.DEFAULT_TIMEOUT = 2
+        yubico.CA_CERTS_BUNDLE_PATH = None
 
         self.client_no_verify_sig = yubico.Yubico('1234', None,
                                                   use_https=False)
         self.client_verify_sig = yubico.Yubico('1234', 'secret123456',
                                                use_https=False)
+
+    def test_invalid_custom_ca_certs_path(self):
+        yubico.CA_CERTS_BUNDLE_PATH = '/does/not/exist.1'
+        client = yubico.Yubico('1234', 'secret123456')
+
+        try:
+            client.verify('bad')
+        except requests.exceptions.SSLError:
+            pass
+        else:
+            self.fail('SSL exception was not thrown')
 
     def test_replayed_otp(self):
         self._set_mock_action('REPLAYED_OTP')

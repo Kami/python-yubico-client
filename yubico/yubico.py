@@ -35,6 +35,9 @@ logger = logging.getLogger('yubico.client')
 FORMAT = '%(asctime)-15s [%(levelname)s] %(message)s'
 logging.basicConfig(format=FORMAT)
 
+# Path to the custom CA certificates bundle. Only used if set.
+CA_CERTS_BUNDLE_PATH = None
+
 API_URLS = ('api.yubico.com/wsapi/2.0/verify',
             'api2.yubico.com/wsapi/2.0/verify',
             'api3.yubico.com/wsapi/2.0/verify',
@@ -88,16 +91,19 @@ class Yubico(object):
         start_time = time.time()
         while threads and (start_time + timeout) > time.time():
             for thread in threads:
-                if not thread.is_alive() and thread.response:
-                    status = self.verify_response(thread.response,
-                                                  otp.otp, nonce,
-                                                  return_response)
+                if not thread.is_alive():
+                    if thread.exception:
+                        raise thread.exception
+                    elif thread.response:
+                        status = self.verify_response(thread.response,
+                                                      otp.otp, nonce,
+                                                      return_response)
 
-                    if status:
-                        if return_response:
-                            return status
-                        else:
-                            return True
+                        if status:
+                            if return_response:
+                                return status
+                            else:
+                                return True
                     threads.remove(thread)
             time.sleep(0.1)
 
@@ -301,6 +307,7 @@ class URLThread(threading.Thread):
         self.url = url
         self.timeout = timeout
         self.verify_cert = verify_cert
+        self.exception = None
         self.request = None
         self.response = None
 
@@ -310,11 +317,18 @@ class URLThread(threading.Thread):
     def run(self):
         logger.debug('Sending HTTP request to %s (thread=%s)' % (self.url,
                                                                  self.name))
+        verify = self.verify_cert
+
+        if verify and CA_CERTS_BUNDLE_PATH is not None:
+            verify = CA_CERTS_BUNDLE_PATH
 
         try:
             self.request = requests.get(url=self.url, timeout=self.timeout,
-                                        verify=self.verify_cert)
+                                        verify=verify)
             self.response = self.request.content
+        except requests.exceptions.SSLError, e:
+            self.exception = e
+            self.response = None
         except Exception, e:
             logger.error('Failed to retrieve response: ' + str(e))
             self.response = None
