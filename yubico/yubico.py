@@ -38,6 +38,26 @@ logging.basicConfig(format=FORMAT)
 # Path to the custom CA certificates bundle. Only used if set.
 CA_CERTS_BUNDLE_PATH = None
 
+COMMON_CA_LOCATIONS = [
+    '/usr/local/lib/ssl/certs/ca-certificates.crt',
+    '/usr/local/ssl/certs/ca-certificates.crt',
+    '/usr/local/share/curl/curl-ca-bundle.crt',
+    '/usr/local/etc/openssl/cert.pem',
+    '/opt/local/lib/ssl/certs/ca-certificates.crt',
+    '/opt/local/ssl/certs/ca-certificates.crt',
+    '/opt/local/share/curl/curl-ca-bundle.crt',
+    '/opt/local/etc/openssl/cert.pem',
+    '/usr/lib/ssl/certs/ca-certificates.crt',
+    '/usr/ssl/certs/ca-certificates.crt',
+    '/usr/share/curl/curl-ca-bundle.crt',
+    '/etc/ssl/certs/ca-certificates.crt',
+    '/etc/pki/tls/cert.pem',
+    '/etc/pki/CA/cacert.pem',
+    'C:\Windows\curl-ca-bundle.crt',
+    'C:\Windows\ca-bundle.crt',
+    'C:\Windows\cacert.pem'
+]
+
 API_URLS = ('api.yubico.com/wsapi/2.0/verify',
             'api2.yubico.com/wsapi/2.0/verify',
             'api3.yubico.com/wsapi/2.0/verify',
@@ -74,6 +94,8 @@ class Yubico(object):
         message signature verification failed and None for the rest of the
         status values.
         """
+        ca_bundle_path = self._get_ca_bundle_path()
+
         otp = OTP(otp, self.translate_otp)
         nonce = base64.b64encode(os.urandom(30), 'xz')[:25]
         query_string = self.generate_query_string(otp.otp, nonce, timestamp,
@@ -84,7 +106,7 @@ class Yubico(object):
         timeout = timeout or DEFAULT_TIMEOUT
         for url in request_urls:
             thread = URLThread('%s?%s' % (url, query_string), timeout,
-                               self.verify_cert)
+                               self.verify_cert, ca_bundle_path)
             thread.start()
             threads.append(thread)
 
@@ -304,13 +326,29 @@ class Yubico(object):
 
         return urls
 
+    def _get_ca_bundle_path(self):
+        """
+        Return a path to the CA bundle which is used for verifying the hosts
+        SSL certificate.
+        """
+        if CA_CERTS_BUNDLE_PATH:
+            # User provided a custom path
+            return CA_CERTS_BUNDLE_PATH
+
+        for file_path in COMMON_CA_LOCATIONS:
+            if os.path.exists(file_path) and os.path.isfile(file_path):
+                return file_path
+
+        return None
+
 
 class URLThread(threading.Thread):
-    def __init__(self, url, timeout, verify_cert):
+    def __init__(self, url, timeout, verify_cert, ca_bundle_path=None):
         super(URLThread, self).__init__()
         self.url = url
         self.timeout = timeout
         self.verify_cert = verify_cert
+        self.ca_bundle_path = ca_bundle_path
         self.exception = None
         self.request = None
         self.response = None
@@ -323,8 +361,9 @@ class URLThread(threading.Thread):
                                                                  self.name))
         verify = self.verify_cert
 
-        if verify and CA_CERTS_BUNDLE_PATH is not None:
-            verify = CA_CERTS_BUNDLE_PATH
+        if self.ca_bundle_path is not None:
+            verify = self.ca_bundle_path
+            logger.debug('Using custom CA bunde: %s' % (self.ca_bundle_path))
 
         try:
             self.request = requests.get(url=self.url, timeout=self.timeout,
