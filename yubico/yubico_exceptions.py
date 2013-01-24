@@ -34,6 +34,7 @@ class InvalidValidationResponse(YubicoError):
         self.reason = reason
         self.response = response
         self.parameters = parameters
+        self.message = self.reason
 
     def __str__(self):
         return self.reason
