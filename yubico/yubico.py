@@ -26,13 +26,10 @@ import hashlib
 import threading
 import logging
 
+import requests
+
 from otp import OTP
 from yubico_exceptions import *
-
-try:
-    import httplib_ssl
-except ImportError:
-    httplib_ssl = None
 
 logger = logging.getLogger('yubico.client')
 FORMAT = '%(asctime)-15s [%(levelname)s] %(message)s'
@@ -324,17 +321,13 @@ class URLThread(threading.Thread):
     def run(self):
         logger.debug('Sending HTTP request to %s (thread=%s)' % (self.url,
                                                                  self.name))
-        socket.setdefaulttimeout(self.timeout)
-
-        if self.url.startswith('https') and self.verify_cert:
-            handler = httplib_ssl.VerifiedHTTPSHandler()
-            opener = urllib2.build_opener(handler)
-            urllib2.install_opener(opener)
 
         try:
-            self.request = urllib2.urlopen(self.url)
-            self.response = self.request.read()
-        except Exception:
+            self.request = requests.get(url=self.url, timeout=self.timeout,
+                                        verify=self.verify_cert)
+            self.response = self.request.content
+        except Exception, e:
+            logger.error('Failed to retrieve response: ' + str(e))
             self.response = None
 
         logger.debug('Received response from %s (thread=%s): %s' % (self.url,
