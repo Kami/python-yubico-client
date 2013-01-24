@@ -1,5 +1,6 @@
 1.6.0 - in development:
 
+* Drop support for Python 2.5
 * Use `requests` library for performing HTTP requests and turn SSL cert
   verification on by default
 * Avoid busy-looping (add time.sleep) when waiting for responses.

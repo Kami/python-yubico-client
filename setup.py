@@ -76,7 +76,7 @@ class TestCommand(Command):
 setup(name='yubico',
       version='.' . join(map(str, version)),
       description='Python Yubico Client',
-      author='Tomaž Muraus',
+      author='Tomaz Muraus',
       author_email='tomaz+pypi@tomaz.me',
       license='BSD',
       url='http://github.com/Kami/python-yubico-client/',
@@ -90,8 +90,6 @@ setup(name='yubico',
       cmdclass={
           'test': TestCommand,
       },
-
-
       classifiers=[
           'Development Status :: 4 - Beta',
           'Environment :: Console',
