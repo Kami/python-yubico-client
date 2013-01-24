@@ -4,7 +4,10 @@ python:
   - "2.7"
   - "pypy"
 
-script: python setup.py test
+script:
+ - pep8 tests/
+ - pep8 yubico/
+ - pep8python setup.py test
 
 notifications:
   email:
