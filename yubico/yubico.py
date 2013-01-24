@@ -15,28 +15,47 @@
 
 import re
 import os
-import sys
 import time
-import socket
 import urllib
-import urllib2
 import hmac
 import base64
 import hashlib
 import threading
 import logging
 
+import requests
+
 from otp import OTP
-from yubico_exceptions import *
+from yubico_exceptions import (StatusCodeError, InvalidClientIdError,
+                               InvalidValidationResponse,
+                               SignatureVerificationError)
 
-try:
-    import httplib_ssl
-except ImportError:
-    httplib_ssl = None
-
-logger = logging.getLogger('face')
+logger = logging.getLogger('yubico.client')
 FORMAT = '%(asctime)-15s [%(levelname)s] %(message)s'
 logging.basicConfig(format=FORMAT)
+
+# Path to the custom CA certificates bundle. Only used if set.
+CA_CERTS_BUNDLE_PATH = None
+
+COMMON_CA_LOCATIONS = [
+    '/usr/local/lib/ssl/certs/ca-certificates.crt',
+    '/usr/local/ssl/certs/ca-certificates.crt',
+    '/usr/local/share/curl/curl-ca-bundle.crt',
+    '/usr/local/etc/openssl/cert.pem',
+    '/opt/local/lib/ssl/certs/ca-certificates.crt',
+    '/opt/local/ssl/certs/ca-certificates.crt',
+    '/opt/local/share/curl/curl-ca-bundle.crt',
+    '/opt/local/etc/openssl/cert.pem',
+    '/usr/lib/ssl/certs/ca-certificates.crt',
+    '/usr/ssl/certs/ca-certificates.crt',
+    '/usr/share/curl/curl-ca-bundle.crt',
+    '/etc/ssl/certs/ca-certificates.crt',
+    '/etc/pki/tls/cert.pem',
+    '/etc/pki/CA/cacert.pem',
+    'C:\Windows\curl-ca-bundle.crt',
+    'C:\Windows\ca-bundle.crt',
+    'C:\Windows\cacert.pem'
+]
 
 API_URLS = ('api.yubico.com/wsapi/2.0/verify',
             'api2.yubico.com/wsapi/2.0/verify',
@@ -47,8 +66,9 @@ API_URLS = ('api.yubico.com/wsapi/2.0/verify',
 DEFAULT_TIMEOUT = 10            # How long to wait before the time out occurs
 DEFAULT_MAX_TIME_WINDOW = 40    # How many seconds can pass between the first
                                 # and last OTP generations so the OTP is
-                                # still considered valid (only used in the multi
-                                # mode) default is 5 seconds (40 / 0.125 = 5)
+                                # still considered valid (only used in the
+                                # multi mode) default is 5 seconds
+                                # (40 / 0.125 = 5)
 
 BAD_STATUS_CODES = ['BAD_OTP', 'REPLAYED_OTP', 'BAD_SIGNATURE',
                     'MISSING_PARAMETER', 'OPERATION_NOT_ALLOWED',
@@ -56,20 +76,9 @@ BAD_STATUS_CODES = ['BAD_OTP', 'REPLAYED_OTP', 'BAD_SIGNATURE',
                     'REPLAYED_REQUEST']
 
 
-class Yubico():
-    def __init__(self, client_id, key=None, use_https=True, verify_cert=False,
+class Yubico(object):
+    def __init__(self, client_id, key=None, use_https=True, verify_cert=True,
                  translate_otp=True):
-
-        if use_https and not httplib_ssl:
-            raise Exception('SSL support not available')
-
-        if use_https and httplib_ssl and httplib_ssl.CA_CERTS == '':
-            raise Exception('If you want to validate server certificate,'
-                            ' you need to set CA_CERTS '
-                            'variable in the httplib_ssl.py file pointing '
-                            'to a file which contains a list of trusted CA '
-                            'certificates')
-
         self.client_id = client_id
         self.key = base64.b64decode(key) if key is not None else None
         self.use_https = use_https
@@ -84,6 +93,8 @@ class Yubico():
         message signature verification failed and None for the rest of the
         status values.
         """
+        ca_bundle_path = self._get_ca_bundle_path()
+
         otp = OTP(otp, self.translate_otp)
         nonce = base64.b64encode(os.urandom(30), 'xz')[:25]
         query_string = self.generate_query_string(otp.otp, nonce, timestamp,
@@ -94,7 +105,7 @@ class Yubico():
         timeout = timeout or DEFAULT_TIMEOUT
         for url in request_urls:
             thread = URLThread('%s?%s' % (url, query_string), timeout,
-                                          self.verify_cert)
+                               self.verify_cert, ca_bundle_path)
             thread.start()
             threads.append(thread)
 
@@ -102,16 +113,19 @@ class Yubico():
         start_time = time.time()
         while threads and (start_time + timeout) > time.time():
             for thread in threads:
-                if not thread.is_alive() and thread.response:
-                    status = self.verify_response(thread.response,
-                                                  otp.otp, nonce,
-                                                  return_response)
+                if not thread.is_alive():
+                    if thread.exception:
+                        raise thread.exception
+                    elif thread.response:
+                        status = self.verify_response(thread.response,
+                                                      otp.otp, nonce,
+                                                      return_response)
 
-                    if status:
-                        if return_response:
-                            return status
-                        else:
-                            return True
+                        if status:
+                            if return_response:
+                                return status
+                            else:
+                                return True
                     threads.remove(thread)
             time.sleep(0.1)
 
@@ -139,7 +153,7 @@ class Yubico():
         # server but in this case, user would need to provide his AES key.
         for otp in otps:
             response = self.verify(otp.otp, True, sl, timeout,
-                                  return_response=True)
+                                   return_response=True)
 
             if not response:
                 return False
@@ -173,10 +187,12 @@ class Yubico():
         """
         try:
             status = re.search(r'status=([A-Z0-9_]+)', response) \
-                                 .groups()
+                       .groups()
+
             if len(status) > 1:
-                raise InvalidValidationResponse('More than one status= returned. Possible attack!',
-                                                response)
+                message = 'More than one status= returned. Possible attack!'
+                raise InvalidValidationResponse(message, response)
+
             status = status[0]
         except (AttributeError, IndexError):
             return False
@@ -188,7 +204,7 @@ class Yubico():
         # signature
         if self.key:
             generated_signature = \
-                    self.generate_message_signature(parameters)
+                self.generate_message_signature(parameters)
 
             # Signature located in the response does not match the one we
             # have generated
@@ -198,11 +214,12 @@ class Yubico():
         param_dict = self.get_parameters_as_dictionary(parameters)
 
         if 'otp' in param_dict and param_dict['dict'] != otp:
-            raise InvalidValidationResponse('Unexpected OTP in response. Possible attack!',
-                                            response, param_dict)
+            message = 'Unexpected OTP in response. Possible attack!'
+            raise InvalidValidationResponse(message, response, param_dict)
+
         if 'nonce' in param_dict and param_dict['nonce'] != nonce:
-            raise InvalidValidationResponse('Unexpected nonce in response. Possible attack!',
-                                            response, param_dict)
+            message = 'Unexpected nonce in response. Possible attack!'
+            raise InvalidValidationResponse(message, response, param_dict)
 
         if status == 'OK':
             if return_response:
@@ -231,7 +248,7 @@ class Yubico():
         if sl is not None:
             if sl not in range(0, 101) and sl not in ['fast', 'secure']:
                 raise Exception('sl parameter value must be between 0 and '
-                                 '100 or string "fast" or "secure"')
+                                '100 or string "fast" or "secure"')
 
             data.append(('sl', sl))
 
@@ -282,15 +299,15 @@ class Yubico():
         for index, (key, value) in enumerate(split_dict.iteritems()):
             query_string += '%s=%s' % (key, value)
 
-            if index != len(split_dict) -1:
+            if index != len(split_dict) - 1:
                 query_string += '&'
 
         return (signature, query_string)
 
     def get_parameters_as_dictionary(self, query_string):
         """ Returns query string parameters as a dictionary. """
-        dictionary = dict([parameter.split('=', 1) for parameter \
-                    in query_string.split('&')])
+        dictionary = dict([parameter.split('=', 1) for parameter
+                           in query_string.split('&')])
 
         return dictionary
 
@@ -308,35 +325,52 @@ class Yubico():
 
         return urls
 
+    def _get_ca_bundle_path(self):
+        """
+        Return a path to the CA bundle which is used for verifying the hosts
+        SSL certificate.
+        """
+        if CA_CERTS_BUNDLE_PATH:
+            # User provided a custom path
+            return CA_CERTS_BUNDLE_PATH
+
+        for file_path in COMMON_CA_LOCATIONS:
+            if os.path.exists(file_path) and os.path.isfile(file_path):
+                return file_path
+
+        return None
+
 
 class URLThread(threading.Thread):
-    def __init__(self, url, timeout, verify_cert):
+    def __init__(self, url, timeout, verify_cert, ca_bundle_path=None):
         super(URLThread, self).__init__()
         self.url = url
         self.timeout = timeout
         self.verify_cert = verify_cert
+        self.ca_bundle_path = ca_bundle_path
+        self.exception = None
         self.request = None
         self.response = None
-
-        if int(sys.version[0]) == 2 and int(sys.version[2]) <= 5:
-            self.is_alive = self.isAlive
 
     def run(self):
         logger.debug('Sending HTTP request to %s (thread=%s)' % (self.url,
                                                                  self.name))
-        socket.setdefaulttimeout(self.timeout)
+        verify = self.verify_cert
 
-        if self.url.startswith('https') and self.verify_cert:
-            handler = httplib_ssl.VerifiedHTTPSHandler()
-            opener = urllib2.build_opener(handler)
-            urllib2.install_opener(opener)
+        if self.ca_bundle_path is not None:
+            verify = self.ca_bundle_path
+            logger.debug('Using custom CA bunde: %s' % (self.ca_bundle_path))
 
         try:
-            self.request = urllib2.urlopen(self.url)
-            self.response = self.request.read()
-        except Exception:
+            self.request = requests.get(url=self.url, timeout=self.timeout,
+                                        verify=verify)
+            self.response = self.request.content
+        except requests.exceptions.SSLError, e:
+            self.exception = e
+            self.response = None
+        except Exception, e:
+            logger.error('Failed to retrieve response: ' + str(e))
             self.response = None
 
-        logger.debug('Received response from %s (thread=%s): %s' % (self.url,
-                                                               self.name,
-                                                               self.response))
+        args = (self.url, self.name, self.response)
+        logger.debug('Received response from %s (thread=%s): %s' % args)
