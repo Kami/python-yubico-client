@@ -1,5 +1,9 @@
 1.6.0 - in development:
 
+* Allow user to specify a path to the CA bundle which is used for verifying the
+  server SSL certificate by setting `CA_CERTS_BUNDLE_PATH` variable
+* When selecting which CA bundle is used for verifying the server SSL
+  certificate look for the bundle in some common locations. #10
 * Drop support for Python 2.5
 * Use `requests` library for performing HTTP requests and turn SSL cert
   verification on by default
