@@ -16,8 +16,6 @@ from tests.utils import MockAPIServerRunner
 
 TEST_PATHS = ['tests']
 
-pre_python26 = (sys.version_info[0] == 2 and sys.version_info[1] < 6)
-
 version_re = re.compile(
     r'__version__ = (\(.*?\))')
 
@@ -83,7 +81,6 @@ setup(name='yubico',
       download_url='http://github.com/Kami/python-yubico-client/downloads/',
       packages=['yubico'],
       provides=['yubico'],
-      requires=([], ['ssl'],)[pre_python26],
       install_requires=[
         'requests == 1.1.0',
       ],
