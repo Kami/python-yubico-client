@@ -56,7 +56,7 @@ BAD_STATUS_CODES = ['BAD_OTP', 'REPLAYED_OTP', 'BAD_SIGNATURE',
                     'REPLAYED_REQUEST']
 
 
-class Yubico():
+class Yubico(object):
     def __init__(self, client_id, key=None, use_https=True, verify_cert=True,
                  translate_otp=True):
 

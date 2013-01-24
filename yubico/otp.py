@@ -5,7 +5,7 @@ Class which holds data about an OTP.
 import modhex
 
 
-class OTP():
+class OTP(object):
     def __init__(self, otp, translate_otp=True):
         self.otp = self.get_otp_modehex_interpretation(otp) \
                              if translate_otp else otp
