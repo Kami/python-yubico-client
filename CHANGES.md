@@ -1,4 +1,4 @@
-1.6.0 - in development:
+1.6.0 - 2013-01-24:
 
 * Allow user to specify a path to the CA bundle which is used for verifying the
   server SSL certificate by setting `CA_CERTS_BUNDLE_PATH` variable.
