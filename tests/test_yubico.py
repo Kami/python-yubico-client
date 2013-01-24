@@ -110,13 +110,7 @@ class TestYubicoVerifySingle(unittest.TestCase):
         if signature:
             path += '&signature=%s' % (signature)
 
-        conn = httplib.HTTPConnection('127.0.0.1:' + str(port))
-        conn.request('GET', path)
-
-        try:
-            conn.getresponse()
-        except:
-            pass
+        requests.get(url='http://127.0.0.1:%s%s' % (port, path))
 
 
 if __name__ == '__main__':
