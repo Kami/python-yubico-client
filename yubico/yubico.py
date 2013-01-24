@@ -17,9 +17,7 @@ import re
 import os
 import sys
 import time
-import socket
 import urllib
-import urllib2
 import hmac
 import base64
 import hashlib
@@ -29,7 +27,9 @@ import logging
 import requests
 
 from otp import OTP
-from yubico_exceptions import *
+from yubico_exceptions import (StatusCodeError, InvalidClientIdError,
+                               InvalidValidationResponse,
+                               SignatureVerificationError)
 
 logger = logging.getLogger('yubico.client')
 FORMAT = '%(asctime)-15s [%(levelname)s] %(message)s'
