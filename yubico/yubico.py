@@ -213,7 +213,7 @@ class Yubico(object):
                                                  signature)
         param_dict = self.get_parameters_as_dictionary(parameters)
 
-        if 'otp' in param_dict and param_dict['dict'] != otp:
+        if 'otp' in param_dict and param_dict['otp'] != otp:
             message = 'Unexpected OTP in response. Possible attack!'
             raise InvalidValidationResponse(message, response, param_dict)
 
