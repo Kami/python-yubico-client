@@ -84,6 +84,9 @@ setup(name='yubico',
       packages=['yubico'],
       provides=['yubico'],
       requires=([], ['ssl'],)[pre_python26],
+      install_requires=[
+        'requests == 1.1.0',
+      ],
       cmdclass={
           'test': TestCommand,
       },
