@@ -57,7 +57,7 @@ BAD_STATUS_CODES = ['BAD_OTP', 'REPLAYED_OTP', 'BAD_SIGNATURE',
 
 
 class Yubico():
-    def __init__(self, client_id, key=None, use_https=True, verify_cert=False,
+    def __init__(self, client_id, key=None, use_https=True, verify_cert=True,
                  translate_otp=True):
 
         if use_https and not httplib_ssl:
