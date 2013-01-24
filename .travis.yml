@@ -7,7 +7,7 @@ python:
 script:
  - pep8 tests/
  - pep8 yubico/
- - pep8python setup.py test
+ - python setup.py test
 
 notifications:
   email:
