@@ -8,7 +8,7 @@ from glob import glob
 from os.path import splitext, basename, join as pjoin
 from unittest import TextTestRunner, TestLoader
 
-from distutils.core import setup
+from setuptools import setup
 from distutils.core import Command
 
 sys.path.insert(0, pjoin(os.path.dirname(__file__)))
