@@ -47,8 +47,9 @@ API_URLS = ('api.yubico.com/wsapi/2.0/verify',
 DEFAULT_TIMEOUT = 10            # How long to wait before the time out occurs
 DEFAULT_MAX_TIME_WINDOW = 40    # How many seconds can pass between the first
                                 # and last OTP generations so the OTP is
-                                # still considered valid (only used in the multi
-                                # mode) default is 5 seconds (40 / 0.125 = 5)
+                                # still considered valid (only used in the
+                                # multi mode) default is 5 seconds
+                                # (40 / 0.125 = 5)
 
 BAD_STATUS_CODES = ['BAD_OTP', 'REPLAYED_OTP', 'BAD_SIGNATURE',
                     'MISSING_PARAMETER', 'OPERATION_NOT_ALLOWED',
@@ -83,7 +84,7 @@ class Yubico(object):
         timeout = timeout or DEFAULT_TIMEOUT
         for url in request_urls:
             thread = URLThread('%s?%s' % (url, query_string), timeout,
-                                          self.verify_cert)
+                               self.verify_cert)
             thread.start()
             threads.append(thread)
 
@@ -131,7 +132,7 @@ class Yubico(object):
         # server but in this case, user would need to provide his AES key.
         for otp in otps:
             response = self.verify(otp.otp, True, sl, timeout,
-                                  return_response=True)
+                                   return_response=True)
 
             if not response:
                 return False
@@ -165,10 +166,12 @@ class Yubico(object):
         """
         try:
             status = re.search(r'status=([A-Z0-9_]+)', response) \
-                                 .groups()
+                       .groups()
+
             if len(status) > 1:
-                raise InvalidValidationResponse('More than one status= returned. Possible attack!',
-                                                response)
+                message = 'More than one status= returned. Possible attack!'
+                raise InvalidValidationResponse(message, response)
+
             status = status[0]
         except (AttributeError, IndexError):
             return False
@@ -180,7 +183,7 @@ class Yubico(object):
         # signature
         if self.key:
             generated_signature = \
-                    self.generate_message_signature(parameters)
+                self.generate_message_signature(parameters)
 
             # Signature located in the response does not match the one we
             # have generated
@@ -190,11 +193,12 @@ class Yubico(object):
         param_dict = self.get_parameters_as_dictionary(parameters)
 
         if 'otp' in param_dict and param_dict['dict'] != otp:
-            raise InvalidValidationResponse('Unexpected OTP in response. Possible attack!',
-                                            response, param_dict)
+            message = 'Unexpected OTP in response. Possible attack!'
+            raise InvalidValidationResponse(message, response, param_dict)
+
         if 'nonce' in param_dict and param_dict['nonce'] != nonce:
-            raise InvalidValidationResponse('Unexpected nonce in response. Possible attack!',
-                                            response, param_dict)
+            message = 'Unexpected nonce in response. Possible attack!'
+            raise InvalidValidationResponse(message, response, param_dict)
 
         if status == 'OK':
             if return_response:
@@ -223,7 +227,7 @@ class Yubico(object):
         if sl is not None:
             if sl not in range(0, 101) and sl not in ['fast', 'secure']:
                 raise Exception('sl parameter value must be between 0 and '
-                                 '100 or string "fast" or "secure"')
+                                '100 or string "fast" or "secure"')
 
             data.append(('sl', sl))
 
@@ -274,15 +278,15 @@ class Yubico(object):
         for index, (key, value) in enumerate(split_dict.iteritems()):
             query_string += '%s=%s' % (key, value)
 
-            if index != len(split_dict) -1:
+            if index != len(split_dict) - 1:
                 query_string += '&'
 
         return (signature, query_string)
 
     def get_parameters_as_dictionary(self, query_string):
         """ Returns query string parameters as a dictionary. """
-        dictionary = dict([parameter.split('=', 1) for parameter \
-                    in query_string.split('&')])
+        dictionary = dict([parameter.split('=', 1) for parameter
+                           in query_string.split('&')])
 
         return dictionary
 
@@ -333,6 +337,5 @@ class URLThread(threading.Thread):
             logger.error('Failed to retrieve response: ' + str(e))
             self.response = None
 
-        logger.debug('Received response from %s (thread=%s): %s' % (self.url,
-                                                               self.name,
-                                                               self.response))
+        args = (self.url, self.name, self.response)
+        logger.debug('Received response from %s (thread=%s): %s' % args)

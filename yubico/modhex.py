@@ -118,11 +118,12 @@ xkipe,cdtsr'oèv.
 
 index = {}
 for i, alphabet in enumerate(alphabets):
-      for letter in alphabet:
+    for letter in alphabet:
         index.setdefault(letter, set()).update([i])
 
 HEX = u"0123456789abcdef"
 MODHEX = u"cbdefghijklnrtuv"
+
 
 def translate(otp, to=MODHEX):
     """Return set() of possible modhex interpretations of a Yubikey otp.
@@ -146,4 +147,3 @@ def translate(otp, to=MODHEX):
         translation = dict(zip((ord(c) for c in a), to))
         translated.add(otp.translate(translation))
     return translated
-
