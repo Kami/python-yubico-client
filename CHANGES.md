@@ -7,9 +7,9 @@
 * Drop support for Python 2.5
 * Use `requests` library for performing HTTP requests and turn SSL cert
   verification on by default
-* Avoid busy-looping (add time.sleep) when waiting for responses.
+* Avoid busy-looping (add time.sleep) when waiting for responses. #9
 * Allow user to pass in value `0` for `sl` argument in `verify` and
-  `verify_multi` method
+  `verify_multi` method #8
 * Throw an exception inside `verify` and `verify_multi` method if timeout has
-  occurred or invalid status code is returned
+  occurred or invalid status code is returned #7
 * Add logging
