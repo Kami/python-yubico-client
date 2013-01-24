@@ -58,6 +58,7 @@ class MockAPIServerRunner(ProcessRunner):
             args = [script, '--port=%s' % (self.port)]
 
             self.process = subprocess.Popen(args, shell=False,
-                    cwd=self.base_dir, stdout=log_fp, stderr=log_fp)
+                                            cwd=self.base_dir, stdout=log_fp,
+                                            stderr=log_fp)
             waitForStartUp(self.process, ('127.0.0.1', self.port), 10)
         atexit.register(self.tearDown)

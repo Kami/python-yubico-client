@@ -13,7 +13,7 @@ class TestOTPClass(unittest.TestCase):
     def test_otp_class(self):
         otp1 = OTP('tlerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbl')
         otp2 = OTP('jjjjjjjjnhe.ngcgjeiuujjjdtgihjuecyixinxunkhj',
-                  translate_otp=True)
+                   translate_otp=True)
 
         self.assertEqual(otp1.device_id, 'tlerefhcvijl')
         self.assertEqual(otp2.otp,
@@ -22,9 +22,7 @@ class TestOTPClass(unittest.TestCase):
 
 class TestYubicoVerifySingle(unittest.TestCase):
     def setUp(self):
-        yubico.API_URLS = (
-                '127.0.0.1:8881/wsapi/2.0/verify',
-                )
+        yubico.API_URLS = ('127.0.0.1:8881/wsapi/2.0/verify',)
         yubico.DEFAULT_TIMEOUT = 2
         yubico.CA_CERTS_BUNDLE_PATH = None
 

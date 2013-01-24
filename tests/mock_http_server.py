@@ -77,8 +77,8 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 def main():
     usage = 'usage: %prog --port=<port>'
     parser = OptionParser(usage=usage)
-    parser.add_option("--port", dest='port', default=8881,
-                  help='Port to listen on', metavar='PORT')
+    parser.add_option('--port', dest='port', default=8881,
+                      help='Port to listen on', metavar='PORT')
 
     (options, args) = parser.parse_args()
 
