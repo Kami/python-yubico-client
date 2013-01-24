@@ -56,17 +56,6 @@ BAD_STATUS_CODES = ['BAD_OTP', 'REPLAYED_OTP', 'BAD_SIGNATURE',
 class Yubico(object):
     def __init__(self, client_id, key=None, use_https=True, verify_cert=True,
                  translate_otp=True):
-
-        if use_https and not httplib_ssl:
-            raise Exception('SSL support not available')
-
-        if use_https and httplib_ssl and httplib_ssl.CA_CERTS == '':
-            raise Exception('If you want to validate server certificate,'
-                            ' you need to set CA_CERTS '
-                            'variable in the httplib_ssl.py file pointing '
-                            'to a file which contains a list of trusted CA '
-                            'certificates')
-
         self.client_id = client_id
         self.key = base64.b64decode(key) if key is not None else None
         self.use_https = use_https
