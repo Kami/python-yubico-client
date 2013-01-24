@@ -353,9 +353,6 @@ class URLThread(threading.Thread):
         self.request = None
         self.response = None
 
-        if int(sys.version[0]) == 2 and int(sys.version[2]) <= 5:
-            self.is_alive = self.isAlive
-
     def run(self):
         logger.debug('Sending HTTP request to %s (thread=%s)' % (self.url,
                                                                  self.name))
