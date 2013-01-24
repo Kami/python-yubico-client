@@ -50,6 +50,12 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         elif mock_action == 'ok_signature':
             return self._send_status(status='OK',
                                      signature=signature)
+        elif mock_action == 'no_signature_ok_invalid_otp_in_response':
+            return self._send_status(status='OK',
+                                     signature=signature, otp='different')
+        elif mock_action == 'no_signature_ok_invalid_nonce_in_response':
+            return self._send_status(status='OK',
+                                     signature=signature, nonce='different')
         elif mock_action == 'timeout':
             time.sleep(1)
             return self._send_status(status='OK')
@@ -65,11 +71,17 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def _send_status(self, status, signature=None):
+    def _send_status(self, status, signature=None, otp=None, nonce=None):
         if signature:
             body = '\nh=%s\nstatus=%s' % (signature, status)
         else:
             body = 'status=%s' % (status)
+
+        if otp:
+            body += '&otp=%s' % (otp)
+
+        if nonce:
+            body += '&nonce=%s' % (nonce)
 
         self._end(body=body)
 

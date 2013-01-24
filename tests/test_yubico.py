@@ -7,6 +7,7 @@ from yubico import yubico
 from yubico.otp import OTP
 from yubico.yubico_exceptions import StatusCodeError, InvalidClientIdError
 from yubico.yubico_exceptions import SignatureVerificationError
+from yubico.yubico_exceptions import InvalidValidationResponse
 
 
 class TestOTPClass(unittest.TestCase):
@@ -104,6 +105,26 @@ class TestYubicoVerifySingle(unittest.TestCase):
 
         status = self.client_verify_sig.verify('test')
         self.assertTrue(status)
+
+    def test_verify_invalid_otp_returned_in_the_response(self):
+        self._set_mock_action('no_signature_ok_invalid_otp_in_response')
+
+        try:
+            self.client_no_verify_sig.verify('test')
+        except InvalidValidationResponse, e:
+            self.assertTrue('Unexpected OTP in response' in e.message)
+        else:
+            self.fail('Exception was not thrown')
+
+    def test_verify_invalid_nonce_returned_in_the_response(self):
+        self._set_mock_action('no_signature_ok_invalid_nonce_in_response')
+
+        try:
+            self.client_no_verify_sig.verify('test')
+        except InvalidValidationResponse, e:
+            self.assertTrue('Unexpected nonce in response' in e.message)
+        else:
+            self.fail('Exception was not thrown')
 
     def _set_mock_action(self, action, port=8881, signature=None):
         path = '/set_mock_action?action=%s' % (action)
