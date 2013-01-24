@@ -34,7 +34,7 @@ try:
 except ImportError:
     httplib_ssl = None
 
-logger = logging.getLogger('face')
+logger = logging.getLogger('yubico.client')
 FORMAT = '%(asctime)-15s [%(levelname)s] %(message)s'
 logging.basicConfig(format=FORMAT)
 
