@@ -6,7 +6,7 @@ validation protocol version 2.0.
 * Yubico website: [http://www.yubico.com][1]
 * Yubico documentation: [http://www.yubico.com/developers/intro/][2]
 * Validation Protocol Version 2.0 FAQ: [http://www.yubico.com/developers/version2/][3]
-* Validation Protocol Version 2.0 description: [http://code.google.com/p/yubikey-val-server-php/wiki/ValidationProtocolV20][4]
+* Validation Protocol Version 2.0 description: [https://github.com/Yubico/yubikey-val/wiki/ValidationProtocolV20][4]
 
 ## Installation
 
@@ -62,4 +62,4 @@ Both methods can also throw one of the following exceptions:
 [1]: http://www.yubico.com
 [2]: http://www.yubico.com/developers/intro/
 [3]: http://www.yubico.com/developers/version2/
-[4]: http://code.google.com/p/yubikey-val-server-php/wiki/ValidationProtocolV20
+[4]: https://github.com/Yubico/yubikey-val/wiki/ValidationProtocolV20
