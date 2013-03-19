@@ -31,8 +31,6 @@ from yubico_exceptions import (StatusCodeError, InvalidClientIdError,
                                SignatureVerificationError)
 
 logger = logging.getLogger('yubico.client')
-FORMAT = '%(asctime)-15s [%(levelname)s] %(message)s'
-logging.basicConfig(format=FORMAT)
 
 # Path to the custom CA certificates bundle. Only used if set.
 CA_CERTS_BUNDLE_PATH = None
