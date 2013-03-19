@@ -1,3 +1,8 @@
+1.6.1 - 2013-03-19:
+
+* Only run `logging.basicConfig` when running tests so logging config isn't initialised
+  on module import - https://github.com/Kami/python-yubico-client/pull/13
+
 1.6.0 - 2013-01-24:
 
 * Allow user to specify a path to the CA bundle which is used for verifying the

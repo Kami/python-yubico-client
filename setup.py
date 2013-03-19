@@ -3,6 +3,7 @@
 import os
 import re
 import sys
+import logging
 
 from glob import glob
 from os.path import splitext, basename, join as pjoin
@@ -38,6 +39,9 @@ class TestCommand(Command):
     user_options = []
 
     def initialize_options(self):
+        FORMAT = '%(asctime)-15s [%(levelname)s] %(message)s'
+        logging.basicConfig(format=FORMAT)
+        
         THIS_DIR = os.path.abspath(os.path.split(__file__)[0])
         sys.path.insert(0, THIS_DIR)
         for test_path in TEST_PATHS:
