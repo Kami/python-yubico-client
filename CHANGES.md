@@ -1,3 +1,11 @@
+in development:
+
+* If there are multiple interpretations for a given OTP, first try to find the one
+  which matches the input OTP. If the one is found, use the input OTP, otherwise
+  use last of the available interpretations. - https://github.com/Kami/python-yubico-client/issues/14
+
+  Reported by Klas Lindfors
+
 1.6.1 - 2013-03-19:
 
 * Only run `logging.basicConfig` when running tests so logging config isn't initialised
