@@ -29,7 +29,7 @@ class OTP(object):
         elif len(interpretations) > 1:
             # If there are multiple interpretations first try to use the same
             # translation as the input OTP. If the one is not found, use the
-            # last translation.
+            # random interpretation.
             if unicode(otp) in interpretations:
                 return otp
 

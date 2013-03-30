@@ -2,7 +2,7 @@ in development:
 
 * If there are multiple interpretations for a given OTP, first try to find the one
   which matches the input OTP. If the one is found, use the input OTP, otherwise
-  use last of the available interpretations. - https://github.com/Kami/python-yubico-client/issues/14
+  use random interpretation. - https://github.com/Kami/python-yubico-client/issues/14
 
   Reported by Klas Lindfors
 
