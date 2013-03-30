@@ -20,6 +20,19 @@ class TestOTPClass(unittest.TestCase):
         self.assertEqual(otp2.otp,
                          'ccccccccljdeluiucdgffccchkugjcfditgbglbflvjc')
 
+    def test_translation_multiple_interpretations(self):
+        otp_str1 = 'vvbtbtndhtlfguefgluvbdcetnitidgkvfkbicevgcin'
+        otp1 = OTP(otp_str1)
+        self.assertEqual(otp1.otp, otp_str1)
+
+    def test_translation_single_interpretation(self):
+        otp_str1 = 'cccfgvgitchndibrrtuhdrgeufrdkrjfgutfjbnhhglv'
+        otp_str2 = 'cccagvgitchndibrrtuhdrgeufrdkrjfgutfjbnhhglv'
+        otp1 = OTP(otp_str1)
+        otp2 = OTP(otp_str2)
+        self.assertEqual(otp1.otp, otp_str1)
+        self.assertEqual(otp2.otp, otp_str2)
+
 
 class TestYubicoVerifySingle(unittest.TestCase):
     def setUp(self):

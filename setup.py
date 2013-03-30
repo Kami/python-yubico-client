@@ -41,7 +41,7 @@ class TestCommand(Command):
     def initialize_options(self):
         FORMAT = '%(asctime)-15s [%(levelname)s] %(message)s'
         logging.basicConfig(format=FORMAT)
-        
+
         THIS_DIR = os.path.abspath(os.path.split(__file__)[0])
         sys.path.insert(0, THIS_DIR)
         for test_path in TEST_PATHS:
