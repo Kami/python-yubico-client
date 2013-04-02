@@ -20,11 +20,20 @@ class OTP(object):
         # if the OTP uses all 16 characters in its alphabet
         # there is only one possible interpretation of that otp
         try:
-            otp_translated = modhex.translate(unicode(otp)).pop()
+            interpretations = modhex.translate(unicode(otp))
         except Exception:
-            otp_translated = otp
+            return otp
 
-        return otp_translated
+        if len(interpretations) == 0:
+            return otp
+        elif len(interpretations) > 1:
+            # If there are multiple interpretations first try to use the same
+            # translation as the input OTP. If the one is not found, use the
+            # random interpretation.
+            if unicode(otp) in interpretations:
+                return otp
+
+        return interpretations.pop()
 
     def __repr__(self):
         return '%s, %s, %s' % (self.otp, self.device_id, self.timestamp)
