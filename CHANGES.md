@@ -1,4 +1,4 @@
-in development:
+1.6.2 - 2013-04-02:
 
 * If there are multiple interpretations for a given OTP, first try to find the one
   which matches the input OTP. If the one is found, use the input OTP, otherwise
