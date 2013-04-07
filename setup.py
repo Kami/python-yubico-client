@@ -75,7 +75,7 @@ class TestCommand(Command):
             server.setUp()
 
 
-setup(name='yubico',
+setup(name='yubico-client',
       version='.' . join(map(str, version)),
       description='Python Yubico Client',
       author='Tomaz Muraus',
