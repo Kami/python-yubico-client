@@ -1,3 +1,10 @@
+1.6.3 - 2013-04-06:
+
+* Change PyPi package name from `yubico` to `yubico-client`.
+
+  This was done to prevent naming collisions and make creation of distribution
+  specific packages (e.g. debian packages) easier.
+
 1.6.2 - 2013-04-02:
 
 * If there are multiple interpretations for a given OTP, first try to find the one
