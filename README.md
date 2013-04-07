@@ -10,7 +10,11 @@ validation protocol version 2.0.
 
 ## Installation
 
-`pip install yubico`
+`pip install yubico-client`
+
+Note: Package has been recently renamed from `yubico` to `yubico-client`. This
+was done to avoid naming conflicts and make creation of distribution specific
+packages easier.
 
 ## Build Status
 
