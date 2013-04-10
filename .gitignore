@@ -1,4 +1,4 @@
 .tox
 mock_api_server.log
 dist/
-yubico.egg-info
+*.egg-info/
