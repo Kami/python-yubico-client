@@ -12,7 +12,8 @@ validation protocol version 2.0.
 
 `pip install yubico-client`
 
-Note: Package has been recently renamed from `yubico` to `yubico-client`. This
+Note: Package has been recently renamed from `yubico` to `yubico-client` and
+main module has been renamed from `yubico` to `yubico_client`. This
 was done to avoid naming conflicts and make creation of distribution specific
 packages easier.
 
@@ -32,14 +33,14 @@ packages easier.
 
 Single mode:
 
-    from yubico.yubico import Yubico
+    from yubico_client.yubico import Yubico
 
     yubico = Yubico('client id', 'secret key')
     yubico.verify('otp')
 
 Multi mode:
 
-    from yubico.yubico import Yubico
+    from yubico_client.yubico import Yubico
 
     yubico = Yubico('client id', 'secret key')
     yubico.verify_multi(['otp 1', 'otp 2', 'otp 3'])
