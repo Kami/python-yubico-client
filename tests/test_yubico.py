@@ -5,7 +5,8 @@ import requests
 
 from yubico_client import yubico
 from yubico_client.otp import OTP
-from yubico_client.yubico_exceptions import StatusCodeError, InvalidClientIdError
+from yubico_client.yubico_exceptions import StatusCodeError
+from yubico_client.yubico_exceptions import InvalidClientIdError
 from yubico_client.yubico_exceptions import SignatureVerificationError
 from yubico_client.yubico_exceptions import InvalidValidationResponse
 
