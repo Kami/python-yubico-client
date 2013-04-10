@@ -3,11 +3,11 @@ import unittest
 
 import requests
 
-from yubico import yubico
-from yubico.otp import OTP
-from yubico.yubico_exceptions import StatusCodeError, InvalidClientIdError
-from yubico.yubico_exceptions import SignatureVerificationError
-from yubico.yubico_exceptions import InvalidValidationResponse
+from yubico_client import yubico
+from yubico_client.otp import OTP
+from yubico_client.yubico_exceptions import StatusCodeError, InvalidClientIdError
+from yubico_client.yubico_exceptions import SignatureVerificationError
+from yubico_client.yubico_exceptions import InvalidValidationResponse
 
 
 class TestOTPClass(unittest.TestCase):

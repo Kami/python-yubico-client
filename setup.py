@@ -21,7 +21,7 @@ version_re = re.compile(
     r'__version__ = (\(.*?\))')
 
 cwd = os.path.dirname(os.path.abspath(__file__))
-fp = open(os.path.join(cwd, 'yubico', '__init__.py'))
+fp = open(os.path.join(cwd, 'yubico_client', '__init__.py'))
 
 version = None
 for line in fp:
@@ -83,8 +83,8 @@ setup(name='yubico-client',
       license='BSD',
       url='http://github.com/Kami/python-yubico-client/',
       download_url='http://github.com/Kami/python-yubico-client/downloads/',
-      packages=['yubico'],
-      provides=['yubico'],
+      packages=['yubico_client'],
+      provides=['yubico_client'],
       install_requires=[
         'requests == 1.1.0',
       ],

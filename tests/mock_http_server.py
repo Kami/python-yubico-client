@@ -9,7 +9,7 @@ from optparse import OptionParser
 from os.path import join as pjoin
 sys.path.append(pjoin(os.path.dirname(__file__), '../'))
 
-from yubico.yubico import BAD_STATUS_CODES
+from yubico_client.yubico import BAD_STATUS_CODES
 
 mock_action = None
 signature = None
