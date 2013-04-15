@@ -1,6 +1,6 @@
 import sys
-from yubico import yubico
-from yubico import yubico_exceptions
+from yubico_client import Yubico
+from yubico_client import yubico_exceptions
 
 client_id = raw_input('Enter your client id: ')
 secret_key = raw_input('Enter your secret key (optional): ')
@@ -15,7 +15,7 @@ if use_https == 'n':
 else:
     https = True
 
-client = yubico.Yubico(client_id, secret_key, https)
+client = Yubico(client_id, secret_key, https)
 
 try:
     status = client.verify(token)
