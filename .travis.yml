@@ -6,6 +6,7 @@ python:
 script:
  - pep8 tests/
  - pep8 yubico_client/
+ - pep8 demo/
  - python setup.py test
 
 notifications:
