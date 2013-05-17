@@ -76,12 +76,13 @@ BAD_STATUS_CODES = ['BAD_OTP', 'REPLAYED_OTP', 'BAD_SIGNATURE',
 
 class Yubico(object):
     def __init__(self, client_id, key=None, use_https=True, verify_cert=True,
-                 translate_otp=True):
+                 translate_otp=True, api_urls=None):
         self.client_id = client_id
         self.key = base64.b64decode(key) if key is not None else None
         self.use_https = use_https
         self.verify_cert = verify_cert
         self.translate_otp = translate_otp
+        self.api_urls = api_urls
 
     def verify(self, otp, timestamp=False, sl=None, timeout=None,
                return_response=False):
@@ -314,11 +315,12 @@ class Yubico(object):
         Returns a list of the API URLs.
         """
         urls = []
-        for url in API_URLS:
-            if self.use_https:
-                url = 'https://%s' % (url)
-            else:
-                url = 'http://%s' % (url)
+        for url in self.api_urls or API_URLS:
+            if not url.startswith('http'):
+                if self.use_https:
+                    url = 'https://%s' % (url)
+                else:
+                    url = 'http://%s' % (url)
             urls.append(url)
 
         return urls
