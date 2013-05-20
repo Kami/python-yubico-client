@@ -55,7 +55,7 @@ COMMON_CA_LOCATIONS = [
     'C:\Windows\cacert.pem'
 ]
 
-API_URLS = ('api.yubico.com/wsapi/2.0/verify',
+DEFAULT_API_URLS = ('api.yubico.com/wsapi/2.0/verify',
             'api2.yubico.com/wsapi/2.0/verify',
             'api3.yubico.com/wsapi/2.0/verify',
             'api4.yubico.com/wsapi/2.0/verify',
@@ -76,13 +76,12 @@ BAD_STATUS_CODES = ['BAD_OTP', 'REPLAYED_OTP', 'BAD_SIGNATURE',
 
 class Yubico(object):
     def __init__(self, client_id, key=None, use_https=True, verify_cert=True,
-                 translate_otp=True, api_urls=None):
+                 translate_otp=True, api_urls=DEFAULT_API_URLS):
         self.client_id = client_id
         self.key = base64.b64decode(key) if key is not None else None
-        self.use_https = use_https
         self.verify_cert = verify_cert
         self.translate_otp = translate_otp
-        self.api_urls = api_urls
+        self.api_urls = self._init_request_urls(api_urls, use_https)
 
     def verify(self, otp, timestamp=False, sl=None, timeout=None,
                return_response=False):
@@ -98,11 +97,10 @@ class Yubico(object):
         nonce = base64.b64encode(os.urandom(30), 'xz')[:25]
         query_string = self.generate_query_string(otp.otp, nonce, timestamp,
                                                   sl, timeout)
-        request_urls = self.generate_request_urls()
 
         threads = []
         timeout = timeout or DEFAULT_TIMEOUT
-        for url in request_urls:
+        for url in self.api_urls:
             thread = URLThread('%s?%s' % (url, query_string), timeout,
                                self.verify_cert, ca_bundle_path)
             thread.start()
@@ -310,14 +308,19 @@ class Yubico(object):
 
         return dictionary
 
-    def generate_request_urls(self):
+    def _init_request_urls(self, api_urls, use_https):
         """
         Returns a list of the API URLs.
         """
+        if isinstance(api_urls, basestring):
+            api_urls = (api_urls,)
+        elif(not isinstance(api_urls, (list, tuple))):
+            raise TypeError('api_urls needs to be string or iterable!')
+
         urls = []
-        for url in self.api_urls or API_URLS:
+        for url in api_urls:
             if not url.startswith('http'):
-                if self.use_https:
+                if use_https:
                     url = 'https://%s' % (url)
                 else:
                     url = 'http://%s' % (url)
