@@ -1,3 +1,11 @@
+1.7.0 - in development:
+
+* Allow user to pass `api_urls` argument to the `Yubico` class constructor.
+  This argument can contain a list of API urls which are used to validate the
+  token. #18
+
+  Contributed by Dain Nilsson
+
 1.6.3 - 2013-04-06:
 
 * Change PyPi package name from `yubico` to `yubico-client`.
@@ -32,6 +40,6 @@
   `verify_multi` method - https://github.com/Kami/python-yubico-client/pull/8
 * Throw an exception inside `verify` and `verify_multi` method if timeout has
   occurred or invalid status code is returned - https://github.com/Kami/python-yubico-client/pull/7
-* Improve response validation and of included, verify that `otp` and `nonce` 
+* Improve response validation and of included, verify that `otp` and `nonce`
   parameters in the response match one provided in the request - https://github.com/Kami/python-yubico-client/pull/7
 * Add logging
