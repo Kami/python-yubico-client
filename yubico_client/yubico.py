@@ -308,14 +308,15 @@ class Yubico(object):
 
         return dictionary
 
-    def _init_request_urls(self, api_urls, use_https):
+    def _init_request_urls(self, api_urls, use_https=True):
         """
         Returns a list of the API URLs.
         """
+        if not isinstance(api_urls, (basestring, list, tuple)):
+            raise TypeError('api_urls needs to be string or iterable!')
+
         if isinstance(api_urls, basestring):
             api_urls = (api_urls,)
-        elif(not isinstance(api_urls, (list, tuple))):
-            raise TypeError('api_urls needs to be string or iterable!')
 
         urls = []
         for url in api_urls:
