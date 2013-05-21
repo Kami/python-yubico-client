@@ -56,10 +56,10 @@ COMMON_CA_LOCATIONS = [
 ]
 
 DEFAULT_API_URLS = ('api.yubico.com/wsapi/2.0/verify',
-            'api2.yubico.com/wsapi/2.0/verify',
-            'api3.yubico.com/wsapi/2.0/verify',
-            'api4.yubico.com/wsapi/2.0/verify',
-            'api5.yubico.com/wsapi/2.0/verify')
+                    'api2.yubico.com/wsapi/2.0/verify',
+                    'api3.yubico.com/wsapi/2.0/verify',
+                    'api4.yubico.com/wsapi/2.0/verify',
+                    'api5.yubico.com/wsapi/2.0/verify')
 
 DEFAULT_TIMEOUT = 10            # How long to wait before the time out occurs
 DEFAULT_MAX_TIME_WINDOW = 40    # How many seconds can pass between the first
