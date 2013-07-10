@@ -28,7 +28,7 @@ packages easier.
 ## Usage
 
 1. Generate your client id and secret key (this can be done by visiting the
-   [Yubico website](https://api.yubico.com/get-api-key/))
+   [Yubico website](https://upgrade.yubico.com/getapikey/))
 2. Use the client
 
 Single mode:
