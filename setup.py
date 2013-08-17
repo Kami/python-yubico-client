@@ -75,33 +75,36 @@ class TestCommand(Command):
             server.setUp()
 
 
-setup(name='yubico-client',
-      version='.' . join(map(str, version)),
-      description='Python Yubico Client',
-      author='Tomaz Muraus',
-      author_email='tomaz+pypi@tomaz.me',
-      license='BSD',
-      url='http://github.com/Kami/python-yubico-client/',
-      download_url='http://github.com/Kami/python-yubico-client/downloads/',
-      packages=['yubico_client'],
-      provides=['yubico_client'],
-      install_requires=[
+setup(
+    name='yubico-client',
+    version='.' . join(map(str, version)),
+    description='Library for verifying Yubikey One Time Passwords (OTPs)',
+    long_description=open('README.rst').read() + '\n\n' +
+    open('CHANGES.rst').read(),
+    author='Tomaz Muraus',
+    author_email='tomaz+pypi@tomaz.me',
+    license='BSD',
+    url='http://github.com/Kami/python-yubico-client/',
+    download_url='http://github.com/Kami/python-yubico-client/downloads/',
+    packages=['yubico_client'],
+    provides=['yubico_client'],
+    install_requires=[
         'requests == 1.2.3',
-      ],
-      cmdclass={
-          'test': TestCommand,
-      },
-      classifiers=[
-          'Development Status :: 4 - Beta',
-          'Environment :: Console',
-          'Intended Audience :: Developers',
-          'Intended Audience :: System Administrators',
-          'License :: OSI Approved :: BSD License',
-          'Operating System :: OS Independent',
-          'Programming Language :: Python',
-          'Programming Language :: Python :: 3.3',
-          'Programming Language :: Python :: Implementation :: PyPy',
-          'Topic :: Security',
-          'Topic :: Software Development :: Libraries :: Python Modules',
+    ],
+    cmdclass={
+        'test': TestCommand,
+    },
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'Intended Audience :: System Administrators',
+        'License :: OSI Approved :: BSD License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: Implementation :: PyPy',
+        'Topic :: Security',
+        'Topic :: Software Development :: Libraries :: Python Modules',
     ]
 )
