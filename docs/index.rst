@@ -96,5 +96,5 @@ License
 Yubico Client is distributed under the `3-Clause BSD License`_.
 
 .. _`Hosting APT repository on Rackspace CloudFiles`: http://www.tomaz.me/2012/07/22/hosting-apt-repository-on-rackspace-cloud-files.html
-.. _`CHANGES file`: https://github.com/Kami/python-yubico-client/blob/master/CHANGES.md
+.. _`CHANGES file`: https://github.com/Kami/python-yubico-client/blob/master/CHANGES.rst
 .. _`3-Clause BSD License`: http://opensource.org/licenses/BSD-3-Clause
