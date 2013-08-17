@@ -41,6 +41,16 @@ packages easier.
 Running Tests
 -------------
 
+To run the tests use the tox command. This will automatically run the tests on
+all the supported Python versions.
+
 .. code-block:: bash
 
-    $ python setup.py test
+    $ tox
+
+License
+-------
+
+Yubico Client is distributed under the `3-Clause BSD License`_.
+
+.. _`3-Clause BSD License`: http://opensource.org/licenses/BSD-3-Clause
