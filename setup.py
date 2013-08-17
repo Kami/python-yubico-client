@@ -100,7 +100,7 @@ setup(name='yubico-client',
           'Operating System :: OS Independent',
           'Programming Language :: Python',
           'Programming Language :: Python :: 3.3',
-          'Programming Language :: Python :: Implementation :: PyPy'])
+          'Programming Language :: Python :: Implementation :: PyPy',
           'Topic :: Security',
           'Topic :: Software Development :: Libraries :: Python Modules',
     ]
