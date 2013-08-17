@@ -1,2 +1,2 @@
-pep8
-requests == 1.1.0
+pep8 == 1.4.6
+requests == 1.2.3

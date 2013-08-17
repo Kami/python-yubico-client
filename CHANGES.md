@@ -6,6 +6,8 @@
 
   Contributed by Dain Nilsson
 
+* Depend on newer version (`1.2.3` )of `requests` library.
+
 1.6.3 - 2013-04-06:
 
 * Change PyPi package name from `yubico` to `yubico-client`.
