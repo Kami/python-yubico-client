@@ -21,6 +21,11 @@ validation protocol version 2.0.
 For more information and usage examples, please see the.
 `documentation <https://yubico-client.readthedocs.org/en/latest/>`_.
 
+Documentation
+-------------
+
+Documentation is available at https://yubico-client.readthedocs.org/en/latest/
+
 Installation
 ------------
 
