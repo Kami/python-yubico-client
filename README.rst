@@ -24,16 +24,14 @@ For more information and usage examples, please see the.
 Installation
 ------------
 
-.. note::
-
-    Note: Package has been recently renamed from `yubico` to `yubico-client` and
-    the main module has been renamed from `yubico` to `yubico_client`. This
-    was done to avoid naming conflicts and make creation of distribution specific
-    packages easier.
-
 .. code-block:: bash
 
     $ pip install yubico-client
+
+Note: Package has been recently renamed from `yubico` to `yubico-client` and
+the main module has been renamed from `yubico` to `yubico_client`. This
+was done to avoid naming conflicts and make creation of distribution specific
+packages easier.
 
 Running Tests
 -------------
