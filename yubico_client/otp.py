@@ -1,12 +1,21 @@
-"""
-Class which holds data about an OTP.
-"""
-
 import modhex
 
 
 class OTP(object):
+    """
+    Class which holds data about an OTP.
+    """
+
     def __init__(self, otp, translate_otp=True):
+        """
+        Represents an OTP token.
+
+        :param otp: OTP token.
+        :type: otp: ``str``
+
+        :param translate_otp: True if the OTP should be translated.
+        :type translate_otp: ``bool``
+        """
         self.otp = self.get_otp_modehex_interpretation(otp) \
             if translate_otp else otp
 
@@ -16,9 +25,16 @@ class OTP(object):
         self.session_user = None
 
     def get_otp_modehex_interpretation(self, otp):
-        # We only use the first interpretation, because
-        # if the OTP uses all 16 characters in its alphabet
-        # there is only one possible interpretation of that otp
+        """
+        Return modhex interpretation of the provided OTP.
+
+        If there are multiple interpretations available, first one is used,
+        because if the OTP uses all 16 characters in its alphabet there is only
+        one possible interpretation of that OTP.
+
+        :return: Modhex interpretation of the OTP.
+        :rtype: ``str``
+        """
         try:
             interpretations = modhex.translate(unicode(otp))
         except Exception:
