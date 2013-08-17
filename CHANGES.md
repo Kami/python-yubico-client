@@ -6,7 +6,8 @@
 
   Contributed by Dain Nilsson
 
-* Depend on newer version (`1.2.3` )of `requests` library.
+* Depend on newer version (`1.2.3`) of `requests` library.
+* Update code and tests so they also work under Python 3.3
 
 1.6.3 - 2013-04-06:
 
