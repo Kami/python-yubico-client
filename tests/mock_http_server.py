@@ -3,19 +3,28 @@
 import os
 import time
 import sys
-import BaseHTTPServer
+
+try:
+    import BaseHTTPServer
+    BaseHTTPRequestHandler = BaseHTTPServer.BaseHTTPRequestHandler
+    server_class = BaseHTTPServer.HTTPServer
+except ImportError:
+    from http.server import HTTPServer as BaseHTTPServer
+    from http.server import BaseHTTPRequestHandler
+    server_class = BaseHTTPServer
 
 from optparse import OptionParser
 from os.path import join as pjoin
 sys.path.append(pjoin(os.path.dirname(__file__), '../'))
 
 from yubico_client.yubico import BAD_STATUS_CODES
+from yubico_client.py3 import b
 
 mock_action = None
 signature = None
 
 
-class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
+class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         global mock_action, signature
@@ -36,7 +45,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             else:
                 signature = None
 
-            print 'Setting mock_action to %s' % (action)
+            print('Setting mock_action to %s' % (action))
             mock_action = action
             self._end(status_code=200)
             return
@@ -64,12 +73,13 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             return
 
     def _end(self, status_code=200, body=''):
-        print 'Sending response: status_code=%s, body=%s' % (status_code, body)
+        print('Sending response: status_code=%s, body=%s' %
+              (status_code, body))
         self.send_response(status_code)
         self.send_header('Content-Type', 'text/plain')
         self.send_header('Content-Length', str(len(body)))
         self.end_headers()
-        self.wfile.write(body)
+        self.wfile.write(b(body))
 
     def _send_status(self, status, signature=None, otp=None, nonce=None):
         if signature:
@@ -83,7 +93,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         if nonce:
             body += '&nonce=%s' % (nonce)
 
-        self._end(body=body)
+        self._end(body=b(body))
 
 
 def main():
@@ -94,9 +104,8 @@ def main():
 
     (options, args) = parser.parse_args()
 
-    server_class = BaseHTTPServer.HTTPServer
     httpd = server_class(('127.0.0.1', int(options.port)), Handler)
-    print 'Mock API server listening on 127.0.0.1:%s' % (options.port)
+    print('Mock API server listening on 127.0.0.1:%s' % (options.port))
 
     try:
         httpd.serve_forever()

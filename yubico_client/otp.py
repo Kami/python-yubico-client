@@ -1,4 +1,5 @@
-import modhex
+from yubico_client.modhex import translate
+from yubico_client.py3 import u
 
 
 class OTP(object):
@@ -16,8 +17,10 @@ class OTP(object):
         :param translate_otp: True if the OTP should be translated.
         :type translate_otp: ``bool``
         """
-        self.otp = self.get_otp_modehex_interpretation(otp) \
-            if translate_otp else otp
+        if translate_otp:
+            self.otp = self.get_otp_modehex_interpretation(otp)
+        else:
+            self.otp = otp
 
         self.device_id = self.otp[:12]
         self.session_counter = None
@@ -36,7 +39,7 @@ class OTP(object):
         :rtype: ``str``
         """
         try:
-            interpretations = modhex.translate(unicode(otp))
+            interpretations = translate(u(otp))
         except Exception:
             return otp
 
@@ -46,7 +49,7 @@ class OTP(object):
             # If there are multiple interpretations first try to use the same
             # translation as the input OTP. If the one is not found, use the
             # random interpretation.
-            if unicode(otp) in interpretations:
+            if u(otp) in interpretations:
                 return otp
 
         return interpretations.pop()

@@ -12,8 +12,8 @@
 
 import re
 import os
+import sys
 import time
-import urllib
 import hmac
 import base64
 import hashlib
@@ -22,10 +22,13 @@ import logging
 
 import requests
 
-from otp import OTP
-from yubico_exceptions import (StatusCodeError, InvalidClientIdError,
-                               InvalidValidationResponse,
-                               SignatureVerificationError)
+from yubico_client.otp import OTP
+from yubico_client.yubico_exceptions import (StatusCodeError,
+                                             InvalidClientIdError,
+                                             InvalidValidationResponse,
+                                             SignatureVerificationError)
+from yubico_client.py3 import b
+from yubico_client.py3 import urlencode
 
 logger = logging.getLogger('yubico.client')
 
@@ -91,7 +94,8 @@ class Yubico(object):
         ca_bundle_path = self._get_ca_bundle_path()
 
         otp = OTP(otp, self.translate_otp)
-        nonce = base64.b64encode(os.urandom(30), 'xz')[:25]
+        rand_str = b(os.urandom(30))
+        nonce = base64.b64encode(rand_str, b('xz'))[:25]
         query_string = self.generate_query_string(otp.otp, nonce, timestamp,
                                                   sl, timeout)
 
@@ -249,10 +253,11 @@ class Yubico(object):
         if timeout:
             data.append(('timeout', timeout))
 
-        query_string = urllib.urlencode(data)
+        query_string = urlencode(data)
 
         if self.key:
             hmac_signature = self.generate_message_signature(query_string)
+            hmac_signature = hmac_signature
             query_string += '&h=%s' % (hmac_signature.replace('+', '%2B'))
 
         return query_string
@@ -267,8 +272,8 @@ class Yubico(object):
         pairs_sorted = sorted(pairs)
         pairs_string = '&' . join(['=' . join(pair) for pair in pairs_sorted])
 
-        digest = hmac.new(self.key, pairs_string, hashlib.sha1).digest()
-        signature = base64.b64encode(digest)
+        digest = hmac.new(self.key, b(pairs_string), hashlib.sha1).digest()
+        signature = base64.b64encode(digest).decode('utf-8')
 
         return signature
 
@@ -290,7 +295,7 @@ class Yubico(object):
             signature = None
 
         query_string = ''
-        for index, (key, value) in enumerate(split_dict.iteritems()):
+        for index, (key, value) in enumerate(split_dict.items()):
             query_string += '%s=%s' % (key, value)
 
             if index != len(split_dict) - 1:
@@ -302,17 +307,16 @@ class Yubico(object):
         """ Returns query string parameters as a dictionary. """
         dictionary = dict([parameter.split('=', 1) for parameter
                            in query_string.split('&')])
-
         return dictionary
 
     def _init_request_urls(self, api_urls, use_https=True):
         """
         Returns a list of the API URLs.
         """
-        if not isinstance(api_urls, (basestring, list, tuple)):
+        if not isinstance(api_urls, (str, list, tuple)):
             raise TypeError('api_urls needs to be string or iterable!')
 
-        if isinstance(api_urls, basestring):
+        if isinstance(api_urls, str):
             api_urls = (api_urls,)
 
         urls = []
@@ -365,11 +369,13 @@ class URLThread(threading.Thread):
         try:
             self.request = requests.get(url=self.url, timeout=self.timeout,
                                         verify=verify)
-            self.response = self.request.content
-        except requests.exceptions.SSLError, e:
+            self.response = self.request.content.decode('utf-8')
+        except requests.exceptions.SSLError:
+            e = sys.exc_info()[1]
             self.exception = e
             self.response = None
-        except Exception, e:
+        except Exception:
+            e = sys.exc_info()[1]
             logger.error('Failed to retrieve response: ' + str(e))
             self.response = None
 
