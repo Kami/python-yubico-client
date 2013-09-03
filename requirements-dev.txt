@@ -1,0 +1,1 @@
+-e git+https://github.com/Kami/python-test-utils.git@master#egg=test_utils

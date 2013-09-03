@@ -1,4 +1,4 @@
 .tox
-mock_api_server.log
+*.log
 dist/
 *.egg-info/

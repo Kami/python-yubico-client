@@ -13,7 +13,6 @@ from setuptools import setup
 from distutils.core import Command
 
 sys.path.insert(0, pjoin(os.path.dirname(__file__)))
-from tests.utils import MockAPIServerRunner
 
 TEST_PATHS = ['tests']
 
@@ -70,8 +69,17 @@ class TestCommand(Command):
         return not res.wasSuccessful()
 
     def _run_mock_api_server(self):
+        from test_utils.process_runners import TCPProcessRunner
+
+        script = pjoin(os.path.dirname(__file__), 'tests/mock_http_server.py')
+
         for port in [8881, 8882, 8883]:
-            server = MockAPIServerRunner(port=port)
+            args = [script, '--port=%s' % (port)]
+            log_path = 'mock_api_server_%s.log' % (port)
+            wait_for_address = ('127.0.0.1', port)
+            server = TCPProcessRunner(args=args,
+                                      wait_for_address=wait_for_address,
+                                      log_path=log_path)
             server.setUp()
 
 
