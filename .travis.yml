@@ -4,11 +4,12 @@ python:
   - "2.7"
   - "3.3"
 
+install:
+  - pip install tox
+
 script:
- - pep8 tests/
- - pep8 yubico_client/
- - pep8 demo/
- - python setup.py test
+ - tox -e lint
+ - tox -e py${TRAVIS_PYTHON_VERSION//[.]/}
 
 notifications:
   email:
