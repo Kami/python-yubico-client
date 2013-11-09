@@ -39,7 +39,7 @@ if PY3:
         else:
             raise TypeError("Invalid argument %r for b()" % (s,))
 else:
-    from urllib import urlencode as urlencode
+    from urllib import urlencode as urlencode  # NOQA
 
     u = unicode
     b = bytes = str
