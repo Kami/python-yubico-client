@@ -175,6 +175,98 @@ class TestYubicoVerifySingle(unittest.TestCase):
                                 self.client_no_verify_sig.verify_multi,
                                 otp_list=otp_list)
 
+    def test_verify_multi_too_much_time_passed_between_otp_generations(self):
+        otp_list = [
+            'tlerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbl',
+            'tlerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbc',
+        ]
+
+        max_time_window = 7
+
+        def mock_verify(*args, **kwargs):
+            otp = args[0]
+
+            response = {}
+
+            if otp == 'tlerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbl':
+                timestamp = 1383997754 * 8
+            elif otp == 'tlerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbc':
+                timestamp = (1383997754 + max_time_window + 1) * 8
+            else:
+                raise Exception('Invalid OTP')
+
+            response['timestamp'] = timestamp
+            return response
+
+        self.client_no_verify_sig.verify = mock_verify
+
+        expected_msg = ('More then 7 seconds has passed between generating '
+                        'the first and the last OTP')
+
+        self.assertRaisesRegexp(Exception, expected_msg,
+                                self.client_no_verify_sig.verify_multi,
+                                otp_list=otp_list,
+                                max_time_window=max_time_window)
+
+    def test_verify_multi_first_otp_is_older_than_last(self):
+        otp_list = [
+            'tlerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbl',
+            'tlerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbc',
+        ]
+
+        max_time_window = 7
+
+        def mock_verify(*args, **kwargs):
+            otp = args[0]
+
+            response = {}
+
+            if otp == 'tlerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbl':
+                timestamp = (1383997754 + max_time_window + 1) * 8
+            elif otp == 'tlerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbc':
+                timestamp = 1383997754 * 8
+            else:
+                raise Exception('Invalid OTP')
+
+            response['timestamp'] = timestamp
+            return response
+
+        self.client_no_verify_sig.verify = mock_verify
+
+        expected_msg = ('delta is smaller than zero. First OTP appears '
+                        'to be older than the last one')
+
+        self.assertRaisesRegexp(Exception, expected_msg,
+                                self.client_no_verify_sig.verify_multi,
+                                otp_list=otp_list,
+                                max_time_window=max_time_window)
+
+    def test_verify_multi_success(self):
+        otp_list = [
+            'tlerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbl',
+            'tlerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbc',
+        ]
+
+        def mock_verify(*args, **kwargs):
+            otp = args[0]
+
+            response = {}
+
+            if otp == 'tlerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbl':
+                timestamp = 1383997754 * 8
+            elif otp == 'tlerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbc':
+                timestamp = (1383997754 + 2) * 8
+            else:
+                raise Exception('Invalid OTP')
+
+            response['timestamp'] = timestamp
+            return response
+
+        self.client_no_verify_sig.verify = mock_verify
+
+        status = self.client_no_verify_sig.verify_multi(otp_list=otp_list)
+        self.assertTrue(status)
+
     def _set_mock_action(self, action, port=8881, signature=None):
         path = '/set_mock_action?action=%s' % (action)
 
