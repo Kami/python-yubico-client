@@ -152,6 +152,17 @@ class TestYubicoVerifySingle(unittest.TestCase):
         else:
             self.fail('Exception was not thrown')
 
+    def test_verify_multi_different_device_ids(self):
+        otp_list = [
+            'tlerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbl',
+            'blerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbl',
+        ]
+
+        expected_msg = 'OTPs contain different device ids'
+
+        self.assertRaisesRegexp(Exception, expected_msg,
+                                self.client_no_verify_sig.verify_multi,
+                                otp_list=otp_list)
 
     def test_verify_multi_single_otp(self):
         otp_list = [
