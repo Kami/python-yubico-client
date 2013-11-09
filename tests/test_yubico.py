@@ -5,11 +5,16 @@ import requests
 
 from yubico_client import yubico
 from yubico_client.otp import OTP
-from yubico_client.py3 import PY3
+from yubico_client.py3 import PY3, unittest2_required
 from yubico_client.yubico_exceptions import StatusCodeError
 from yubico_client.yubico_exceptions import InvalidClientIdError
 from yubico_client.yubico_exceptions import SignatureVerificationError
 from yubico_client.yubico_exceptions import InvalidValidationResponse
+
+if unittest2_required:
+    import unittest2 as unittest  # NOQA
+else:
+    import unittest
 
 LOCAL_SERVER = ('127.0.0.1:8881/wsapi/2.0/verify',)
 

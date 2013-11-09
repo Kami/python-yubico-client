@@ -22,9 +22,26 @@
 import sys
 
 PY3 = False
+PY2 = False
+PY25 = False
+PY27 = False
+PY3 = False
+PY32 = False
+
+if sys.version_info >= (2, 0) and sys.version_info < (3, 0):
+    PY2 = True
+
+if sys.version_info >= (2, 5) and sys.version_info <= (2, 6):
+    PY25 = True
+
+if sys.version_info >= (2, 7) and sys.version_info <= (2, 8):
+    PY27 = True
 
 if sys.version_info >= (3, 0):
     PY3 = True
+
+if sys.version_info >= (3, 2) and sys.version_info < (3, 3):
+    PY32 = True
 
 if PY3:
     from urllib.parse import urlencode as urlencode
@@ -43,3 +60,8 @@ else:
 
     u = unicode
     b = bytes = str
+
+if PY27 or PY3:
+    unittest2_required = False
+else:
+    unittest2_required = True
