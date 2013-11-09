@@ -198,9 +198,9 @@ class Yubico(object):
                             'be older than the last one')
 
         if delta > max_time_window:
-            raise Exception('More then %s seconds has passed between ' +
-                            'generating the first and the last OTP.' %
-                            (max_time_window * 0.125))
+            raise Exception(('More then %s seconds has passed between '
+                            'generating the first and the last OTP.') %
+                            (max_time_window))
 
         return True
 
