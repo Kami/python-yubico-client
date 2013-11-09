@@ -152,6 +152,18 @@ class TestYubicoVerifySingle(unittest.TestCase):
         else:
             self.fail('Exception was not thrown')
 
+
+    def test_verify_multi_single_otp(self):
+        otp_list = [
+            'tlerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbl'
+        ]
+
+        expected_msg = 'otp_list needs to contain at least two OTPs'
+
+        self.assertRaisesRegexp(ValueError, expected_msg,
+                                self.client_no_verify_sig.verify_multi,
+                                otp_list=otp_list)
+
     def _set_mock_action(self, action, port=8881, signature=None):
         path = '/set_mock_action?action=%s' % (action)
 

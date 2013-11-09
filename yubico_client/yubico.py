@@ -158,10 +158,14 @@ class Yubico(object):
                                 still be considered valid.
         :type max_time_window: ``int``
         """
+
         # Create the OTP objects
         otps = []
         for otp in otp_list:
             otps.append(OTP(otp, self.translate_otp))
+
+        if len(otp_list) < 2:
+            raise ValueError('otp_list needs to contain at least two OTPs')
 
         device_ids = set()
         for otp in otps:
