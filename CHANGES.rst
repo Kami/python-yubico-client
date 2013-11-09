@@ -3,8 +3,18 @@
 Changelog
 =========
 
-1.7.0 - in development
+1.7.1 - in development
 ----------------------
+
+* Modify ``verify_multi`` method to throw if ``otp_list`` argument contains
+  less than two items
+* Modify ``max_time_window`` argument in the ``verify_multi`` method to be
+  in seconds (#19)
+* Modify ``verify_multi`` method to throw if delta between the first and last
+  OTP timestamp is smaller than zero
+
+1.7.0 - 2013-04-12
+------------------
 
 * Allow user to pass ``api_urls`` argument to the ``Yubico`` class constructor.
   This argument can contain a list of API urls which are used to validate the
