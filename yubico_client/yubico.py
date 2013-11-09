@@ -62,11 +62,9 @@ DEFAULT_API_URLS = ('api.yubico.com/wsapi/2.0/verify',
                     'api5.yubico.com/wsapi/2.0/verify')
 
 DEFAULT_TIMEOUT = 10            # How long to wait before the time out occurs
-DEFAULT_MAX_TIME_WINDOW = 40    # How many seconds can pass between the first
+DEFAULT_MAX_TIME_WINDOW = 5     # How many seconds can pass between the first
                                 # and last OTP generations so the OTP is
-                                # still considered valid (only used in the
-                                # multi mode) default is 5 seconds
-                                # (40 / 0.125 = 5)
+                                # still considered valid.
 
 BAD_STATUS_CODES = ['BAD_OTP', 'REPLAYED_OTP', 'BAD_SIGNATURE',
                     'MISSING_PARAMETER', 'OPERATION_NOT_ALLOWED',
@@ -148,14 +146,14 @@ class Yubico(object):
         # Timeout or no valid response received
         raise Exception('NO_VALID_ANSWERS')
 
-    def verify_multi(self, otp_list, max_time_window=None, sl=None,
-                     timeout=None):
+    def verify_multi(self, otp_list, max_time_window=DEFAULT_MAX_TIME_WINDOW,
+                     sl=None, timeout=None):
         """
         Verify a provided list of OTPs.
 
-        :param max_time_window: Maximum number of seconds which can pass between
-                                the first and last OTP generation for the OTP to
-                                still be considered valid.
+        :param max_time_window: Maximum number of seconds which can pass
+                                between the first and last OTP generation for
+                                the OTP to still be considered valid.
         :type max_time_window: ``int``
         """
 
@@ -191,10 +189,13 @@ class Yubico(object):
         count = len(otps)
         delta = otps[count - 1].timestamp - otps[0].timestamp
 
-        if max_time_window:
-            max_time_window = (max_time_window / 0.125)
-        else:
-            max_time_window = DEFAULT_MAX_TIME_WINDOW
+        # OTPs have an 8Hz timestamp counter so we need to divide it to get
+        # seconds
+        delta = delta / 8
+
+        if delta < 0:
+            raise Exception('delta is smaller than zero. First OTP appears to '
+                            'be older than the last one')
 
         if delta > max_time_window:
             raise Exception('More then %s seconds has passed between ' +
