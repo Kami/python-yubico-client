@@ -86,10 +86,28 @@ class Yubico(object):
     def verify(self, otp, timestamp=False, sl=None, timeout=None,
                return_response=False):
         """
-        Returns True is the provided OTP is valid,
-        False if the REPLAYED_OTP status value is returned or the response
-        message signature verification failed and None for the rest of the
-        status values.
+        Verify a provided OTP.
+
+        :param otp: OTP to verify.
+        :type otp: ``str``
+
+        :param timestamp: True to include request timestamp and session counter
+                          in the response. Defaults to False.
+        :type timestamp: ``bool``
+
+        :param sl: A value indicating percentage of syncing required by client.
+        :type sl: ``int`` or ``str``
+
+        :param timeout: Number of seconds to wait for sync responses.
+        :type timeout: ``int``
+
+        :param return_response: True to return a response object instead of the
+                                status code. Defaults to False.
+        :type return_response: ``bool``
+
+        :return: True is the provided OTP is valid, False if the
+        REPLAYED_OTP status value is returned or the response message signature
+        verification failed and None for the rest of the status values.
         """
         ca_bundle_path = self._get_ca_bundle_path()
 
@@ -130,8 +148,16 @@ class Yubico(object):
         # Timeout or no valid response received
         raise Exception('NO_VALID_ANSWERS')
 
-    def verify_multi(self, otp_list=None, max_time_window=None, sl=None,
+    def verify_multi(self, otp_list, max_time_window=None, sl=None,
                      timeout=None):
+        """
+        Verify a provided list of OTPs.
+
+        :param max_time_window: Maximum number of seconds which can pass between
+                                the first and last OTP generation for the OTP to
+                                still be considered valid.
+        :type max_time_window: ``int``
+        """
         # Create the OTP objects
         otps = []
         for otp in otp_list:
