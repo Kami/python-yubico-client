@@ -3,8 +3,8 @@
 Changelog
 =========
 
-1.8.0 - in development
-----------------------
+1.8.0 - 2013-11-09
+------------------
 
 * Modify ``verify_multi`` method to throw if ``otp_list`` argument contains
   less than two items
