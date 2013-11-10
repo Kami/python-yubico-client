@@ -205,7 +205,7 @@ class TestYubicoVerifySingle(unittest.TestCase):
 
         self.client_no_verify_sig.verify = mock_verify
 
-        expected_msg = ('More then 7 seconds has passed between generating '
+        expected_msg = ('More than 7 seconds have passed between generating '
                         'the first and the last OTP')
 
         self.assertRaisesRegexp(Exception, expected_msg,
