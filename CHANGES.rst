@@ -15,6 +15,10 @@ Changelog
   by passing ``api_urls`` argument with custom non-https URLs to the
   constructor.
 
+* Replace ``CA_CERTS_BUNDLE_PATH`` module level variable with a
+  ``ca_certs_bundle_path`` argument which can be passed to the Yubico class
+  constructor.
+
 1.8.0 - 2013-11-09
 ------------------
 
