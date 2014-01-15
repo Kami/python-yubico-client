@@ -55,11 +55,11 @@ COMMON_CA_LOCATIONS = [
     'C:\Windows\cacert.pem'
 ]
 
-DEFAULT_API_URLS = ('api.yubico.com/wsapi/2.0/verify',
-                    'api2.yubico.com/wsapi/2.0/verify',
-                    'api3.yubico.com/wsapi/2.0/verify',
-                    'api4.yubico.com/wsapi/2.0/verify',
-                    'api5.yubico.com/wsapi/2.0/verify')
+DEFAULT_API_URLS = ('https://api.yubico.com/wsapi/2.0/verify',
+                    'https://api2.yubico.com/wsapi/2.0/verify',
+                    'https://api3.yubico.com/wsapi/2.0/verify',
+                    'https://api4.yubico.com/wsapi/2.0/verify',
+                    'https://api5.yubico.com/wsapi/2.0/verify')
 
 DEFAULT_TIMEOUT = 10            # How long to wait before the time out occurs
 DEFAULT_MAX_TIME_WINDOW = 5     # How many seconds can pass between the first
@@ -73,13 +73,13 @@ BAD_STATUS_CODES = ['BAD_OTP', 'REPLAYED_OTP', 'BAD_SIGNATURE',
 
 
 class Yubico(object):
-    def __init__(self, client_id, key=None, use_https=True, verify_cert=True,
+    def __init__(self, client_id, key=None, verify_cert=True,
                  translate_otp=True, api_urls=DEFAULT_API_URLS):
         self.client_id = client_id
         self.key = base64.b64decode(key) if key is not None else None
         self.verify_cert = verify_cert
         self.translate_otp = translate_otp
-        self.api_urls = self._init_request_urls(api_urls, use_https)
+        self.api_urls = self._init_request_urls(api_urls=api_urls)
 
     def verify(self, otp, timestamp=False, sl=None, timeout=None,
                return_response=False):
@@ -340,7 +340,7 @@ class Yubico(object):
                            in query_string.split('&')])
         return dictionary
 
-    def _init_request_urls(self, api_urls, use_https=True):
+    def _init_request_urls(self, api_urls):
         """
         Returns a list of the API URLs.
         """
@@ -350,16 +350,7 @@ class Yubico(object):
         if isinstance(api_urls, str):
             api_urls = (api_urls,)
 
-        urls = []
-        for url in api_urls:
-            if not url.startswith('http'):
-                if use_https:
-                    url = 'https://%s' % (url)
-                else:
-                    url = 'http://%s' % (url)
-            urls.append(url)
-
-        return urls
+        return list(api_urls)
 
     def _get_ca_bundle_path(self):
         """

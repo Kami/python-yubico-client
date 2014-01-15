@@ -9,18 +9,12 @@ if PY3:
 
 client_id = raw_input('Enter your client id: ')
 secret_key = raw_input('Enter your secret key (optional): ')
-use_https = raw_input('Use secure connection (https)? [y/n]: ')
 token = raw_input('Enter OTP token: ')
 
 if not secret_key:
     secret_key = None
 
-if use_https == 'n':
-    https = False
-else:
-    https = True
-
-client = Yubico(client_id, secret_key, https)
+client = Yubico(client_id, secret_key)
 
 try:
     status = client.verify(token)

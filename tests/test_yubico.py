@@ -16,7 +16,8 @@ if unittest2_required:
 else:
     import unittest
 
-LOCAL_SERVER = ('127.0.0.1:8881/wsapi/2.0/verify',)
+LOCAL_SERVER = ('http://127.0.0.1:8881/wsapi/2.0/verify',)
+LOCAL_SERVER_HTTPS = ('https://127.0.0.1:8881/wsapi/2.0/verify',)
 
 
 class TestOTPClass(unittest.TestCase):
@@ -49,11 +50,9 @@ class TestYubicoVerifySingle(unittest.TestCase):
         yubico.CA_CERTS_BUNDLE_PATH = None
 
         self.client_no_verify_sig = yubico.Yubico('1234', None,
-                                                  api_urls=LOCAL_SERVER,
-                                                  use_https=False)
+                                                  api_urls=LOCAL_SERVER)
         self.client_verify_sig = yubico.Yubico('1234', 'secret123456',
-                                               api_urls=LOCAL_SERVER,
-                                               use_https=False)
+                                               api_urls=LOCAL_SERVER)
 
     def test_invalid_custom_ca_certs_path(self):
         if hasattr(sys, 'pypy_version_info') or PY3:
@@ -61,7 +60,8 @@ class TestYubicoVerifySingle(unittest.TestCase):
             return
 
         yubico.CA_CERTS_BUNDLE_PATH = '/does/not/exist.1'
-        client = yubico.Yubico('1234', 'secret123456', api_urls=LOCAL_SERVER)
+        client = yubico.Yubico('1234', 'secret123456',
+                               api_urls=LOCAL_SERVER_HTTPS)
 
         try:
             client.verify('bad')
@@ -282,27 +282,22 @@ class TestYubicoVerifySingle(unittest.TestCase):
 
 
 class TestAPIUrls(unittest.TestCase):
-    def test_default_urls_https(self):
+    def test_default_urls(self):
         client = yubico.Yubico('1234', 'secret123456')
-        https_urls = list(map(lambda url: 'https://' + url,
-                              yubico.DEFAULT_API_URLS))
-        self.assertEqual(client.api_urls, https_urls)
+        expected_urls = list(yubico.DEFAULT_API_URLS)
 
-    def test_default_urls_http(self):
-        client = yubico.Yubico('1234', 'secret123456', use_https=False)
-        http_urls = list(map(lambda url: 'http://' + url,
-                             yubico.DEFAULT_API_URLS))
-        self.assertEqual(client.api_urls, http_urls)
+        for url in expected_urls:
+            self.assertTrue(url.startswith('https://'))
+
+        self.assertEqual(client.api_urls, expected_urls)
 
     def test_custom_urls(self):
         custom_urls = ['https://example.com/wsapi/2.0/verify',
                        'http://example.com/wsapi/2.0/verify',
-                       'example.com/wsapi/2.0/verify']
-        verify_urls = custom_urls[:]
-        verify_urls[2] = 'https://' + verify_urls[2]
+                       'http://example.com/wsapi/2.0/verify']
 
         client = yubico.Yubico('1234', 'secret123456', api_urls=custom_urls)
-        self.assertEqual(client.api_urls, verify_urls)
+        self.assertEqual(client.api_urls, custom_urls)
 
     def test_single_url(self):
         single_url = 'http://www.example.com'
