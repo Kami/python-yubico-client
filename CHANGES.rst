@@ -3,6 +3,18 @@
 Changelog
 =========
 
+1.9.0 - in development
+------------------
+
+* To discourage bad practices, remove ``use_https`` argument from the `Yubico`
+  class constructor all together. Also update ``DEFAULT_API_URLS`` variable to
+  contain full URLs with a scheme (e.g.
+  ``https://api.yubico.com/wsapi/2.0/verify``).
+
+  If a user wants to use a custom non-https URL or URLs, they can still do that
+  by passing ``api_urls`` argument with custom non-https URLs to the
+  constructor.
+
 1.8.0 - 2013-11-09
 ------------------
 
