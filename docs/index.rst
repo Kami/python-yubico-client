@@ -80,8 +80,36 @@ Both methods can also throw one of the following exceptions:
   ``REPLAYED_REQUEST`` or no response was received from any of the servers
   in the specified time frame (default timeout = 10 seconds)
 
+Using a custom CA certificate bundle
+====================================
+
+.. note::
+
+    This functionality changed slightly in version 1.9.0. Before this version,
+    you could use a custom CA bundle by setting
+    yubico_client.yubico.CA_CERTS_BUNDLE_PATH module level variable.
+
+By default, the library will try to find and use a standard CA bundle which is
+available on your operating system for verifying the server SSL certificate.
+
+If you want to use a custom CA bundle (e.g. you want to use a more restrictive
+bundle which only contains root CA certificate for ``api.yubico.com`` domain),
+you can do so by passing ``ca_certs_bundle_path`` argument to the ``Yubico``
+class constructor.
+
+For example:
+
+.. code-block:: python
+
+    from yubico_client import Yubico
+
+    yubico = Yubico('client id', 'secret key',
+                    ca_certs_bundle_path='/home/to/my/bundle.pem')
+
+Keep in mind that this bundle needs to be in PEM format.
+
 API Documentation
------------------
+=================
 
 For API documentation, please see the :doc:`API Documentation page </api>`.
 
