@@ -49,8 +49,8 @@ Single mode:
 
     from yubico_client import Yubico
 
-    yubico = Yubico('client id', 'secret key')
-    yubico.verify('otp')
+    client = Yubico('client id', 'secret key')
+    client.verify('otp')
 
 The :func:`yubico_client.Yubico.verify` method will return ``True`` if the
 provided OTP is valid (``STATUS=OK``).
@@ -61,8 +61,8 @@ Multi mode:
 
     from yubico_client import Yubico
 
-    yubico = Yubico('client id', 'secret key')
-    yubico.verify_multi(['otp 1', 'otp 2', 'otp 3'])
+    client = Yubico('client id', 'secret key')
+    client.verify_multi(['otp 1', 'otp 2', 'otp 3'])
 
 The :func:`yubico_client.Yubico.verify` method will return ``True`` if all of
 the provided OTPs are valid (``STATUS=OK``).
@@ -97,14 +97,24 @@ bundle which only contains root CA certificate for ``api.yubico.com`` domain),
 you can do so by passing ``ca_certs_bundle_path`` argument to the ``Yubico``
 class constructor.
 
-For example:
+For example (version 1.9.0 and above):
 
 .. code-block:: python
 
     from yubico_client import Yubico
 
-    yubico = Yubico('client id', 'secret key',
+    client = Yubico('client id', 'secret key',
                     ca_certs_bundle_path='/home/to/my/bundle.pem')
+
+For example (versions prior to 1.9.0):
+
+.. code-block:: python
+
+    from yubico_client import yubico
+
+    yubico.CA_CERTS_BUNDLE_PATH = '/home/to/my/bundle.pem'
+    client = yubico.Yubico('client id', 'secret key',
+                           ca_certs_bundle_path='/home/to/my/bundle.pem')
 
 Keep in mind that this bundle needs to be in PEM format.
 
