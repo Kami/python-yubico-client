@@ -32,9 +32,8 @@ from yubico_client.py3 import urlencode
 
 logger = logging.getLogger('yubico.client')
 
-# Path to the custom CA certificates bundle. Only used if set.
-CA_CERTS_BUNDLE_PATH = None
-
+# Path to the standard CA bundle file locations for most of the operating
+# systems
 COMMON_CA_LOCATIONS = [
     '/usr/local/lib/ssl/certs/ca-certificates.crt',
     '/usr/local/ssl/certs/ca-certificates.crt',
