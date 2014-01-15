@@ -350,6 +350,14 @@ class Yubico(object):
         if isinstance(api_urls, str):
             api_urls = (api_urls,)
 
+        api_urls = list(api_urls)
+
+        for url in api_urls:
+            if not url.startswith('http://') and \
+               not url.startswith('https://'):
+                raise ValueError(('URL "%s" contains an invalid or missing'
+                                 ' scheme' % (url)))
+
         return list(api_urls)
 
     def _get_ca_bundle_path(self):

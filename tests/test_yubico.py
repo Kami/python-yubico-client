@@ -299,6 +299,19 @@ class TestAPIUrls(unittest.TestCase):
         client = yubico.Yubico('1234', 'secret123456', api_urls=custom_urls)
         self.assertEqual(client.api_urls, custom_urls)
 
+    def test_custom_urls_invalid_or_missing_scheme(self):
+        invalid_urls = [
+            '127.0.0.1:8000/test',
+            'ftp.example.com/test',
+            'example.com'
+        ]
+
+        for url in invalid_urls:
+            expected_msg = r'URL ".+?" contains an invalid or missing scheme'
+            self.assertRaisesRegexp(ValueError, expected_msg,
+                                    yubico.Yubico, '1234', 'secret123456',
+                                    api_urls=[url])
+
     def test_single_url(self):
         single_url = 'http://www.example.com'
         client = yubico.Yubico('1234', 'secret123456', api_urls=single_url)
