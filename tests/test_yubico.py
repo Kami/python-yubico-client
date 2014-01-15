@@ -1,3 +1,4 @@
+import os
 import sys
 import unittest
 
@@ -47,7 +48,6 @@ class TestOTPClass(unittest.TestCase):
 class TestYubicoVerifySingle(unittest.TestCase):
     def setUp(self):
         yubico.DEFAULT_TIMEOUT = 2
-        yubico.CA_CERTS_BUNDLE_PATH = None
 
         self.client_no_verify_sig = yubico.Yubico('1234', None,
                                                   api_urls=LOCAL_SERVER)
@@ -59,9 +59,9 @@ class TestYubicoVerifySingle(unittest.TestCase):
             # TODO: Figure out why this breaks PyPy and 3.3
             return
 
-        yubico.CA_CERTS_BUNDLE_PATH = '/does/not/exist.1'
         client = yubico.Yubico('1234', 'secret123456',
-                               api_urls=LOCAL_SERVER_HTTPS)
+                               api_urls=LOCAL_SERVER_HTTPS,
+                               ca_certs_bundle_path=os.path.abspath(__file__))
 
         try:
             client.verify('bad')
@@ -69,8 +69,19 @@ class TestYubicoVerifySingle(unittest.TestCase):
             pass
         else:
             self.fail('SSL exception was not thrown')
-        finally:
-            yubico.CA_CERTS_BUNDLE_PATH = None
+
+    def test_custom_ca_certs_path_invalid_path(self):
+        expected_msg = ('Invalid value provided for ca_certs_bundle_path '
+                        'argument')
+        self.assertRaisesRegexp(ValueError, expected_msg,
+                                yubico.Yubico, '1234', 'secret123456',
+                                ca_certs_bundle_path='/does/not/exist.1')
+
+    def test_custom_ca_certs_path(self):
+        file_path = os.path.abspath(__file__)
+        client = yubico.Yubico('1234', 'secret123456',
+                               ca_certs_bundle_path=file_path)
+        self.assertEqual(client._get_ca_bundle_path(), file_path)
 
     def test_replayed_otp(self):
         self._set_mock_action('REPLAYED_OTP')

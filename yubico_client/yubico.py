@@ -74,12 +74,20 @@ BAD_STATUS_CODES = ['BAD_OTP', 'REPLAYED_OTP', 'BAD_SIGNATURE',
 
 class Yubico(object):
     def __init__(self, client_id, key=None, verify_cert=True,
-                 translate_otp=True, api_urls=DEFAULT_API_URLS):
+                 translate_otp=True, api_urls=DEFAULT_API_URLS,
+                 ca_certs_bundle_path=None):
+
+        if ca_certs_bundle_path and \
+           not self._is_valid_ca_bundle_file(ca_certs_bundle_path):
+            raise ValueError(('Invalid value provided for ca_certs_bundle_path'
+                             ' argument'))
+
         self.client_id = client_id
         self.key = base64.b64decode(key) if key is not None else None
         self.verify_cert = verify_cert
         self.translate_otp = translate_otp
         self.api_urls = self._init_request_urls(api_urls=api_urls)
+        self.ca_certs_bundle_path = ca_certs_bundle_path
 
     def verify(self, otp, timestamp=False, sl=None, timeout=None,
                return_response=False):
@@ -365,15 +373,19 @@ class Yubico(object):
         Return a path to the CA bundle which is used for verifying the hosts
         SSL certificate.
         """
-        if CA_CERTS_BUNDLE_PATH:
+        if self.ca_certs_bundle_path:
             # User provided a custom path
-            return CA_CERTS_BUNDLE_PATH
+            return self.ca_certs_bundle_path
 
+        # Return first bundle which is available
         for file_path in COMMON_CA_LOCATIONS:
-            if os.path.exists(file_path) and os.path.isfile(file_path):
+            if self._is_valid_ca_bundle_file(file_path=file_path):
                 return file_path
 
         return None
+
+    def _is_valid_ca_bundle_file(self, file_path):
+        return os.path.exists(file_path) and os.path.isfile(file_path)
 
 
 class URLThread(threading.Thread):
