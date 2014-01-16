@@ -3,7 +3,7 @@
 Changelog
 =========
 
-1.9.0 - in development
+1.9.0 - 2014-01-16
 ------------------
 
 * To discourage bad practices, remove ``use_https`` argument from the `Yubico`
