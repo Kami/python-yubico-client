@@ -2,4 +2,5 @@ include LICENSE
 include NOTICE
 include CHANGES.rst
 include README.rst
-include tests/*.py
+recursive-include tests *.py
+recursive-include demo *.py
