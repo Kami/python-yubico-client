@@ -19,6 +19,8 @@ Changelog
   ``ca_certs_bundle_path`` argument which can be passed to the Yubico class
   constructor.
 
+* Update ``requests`` dependency from ``1.2`` to ``2.2``.
+
 1.8.0 - 2013-11-09
 ------------------
 
