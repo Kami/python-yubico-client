@@ -126,7 +126,7 @@ For API documentation, please see the :doc:`API Documentation page </api>`.
 Changelog
 =========
 
-For changelog, please see the `CHANGES file`_.
+For changelog, please see the :doc:`Changelog page </changelog>`.
 
 License
 =======
