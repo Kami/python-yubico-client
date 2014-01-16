@@ -39,9 +39,18 @@ Git repository:
 Usage
 =====
 
+.. note::
+
+    It may take up until 5 minutes until all validation servers know about your
+    newly generated client.
+
 1. Generate your client id and secret key. This can be done on the
    `Yubico website <https://upgrade.yubico.com/getapikey/>`_.
-2. Use the client
+2. Use the generated client id and key to instantiate the client
+
+Keep in mind that using a secret key is optional, but you are strongly
+recommended to do so. If a secret key is not specified, you can still verify
+the token, but the response message signature won't be verified.
 
 Single mode:
 
@@ -97,7 +106,7 @@ bundle which only contains root CA certificate for ``api.yubico.com`` domain),
 you can do so by passing ``ca_certs_bundle_path`` argument to the ``Yubico``
 class constructor.
 
-For example (version 1.9.0 and above):
+Version 1.9.0 and above:
 
 .. code-block:: python
 
@@ -106,15 +115,14 @@ For example (version 1.9.0 and above):
     client = Yubico('client id', 'secret key',
                     ca_certs_bundle_path='/home/to/my/bundle.pem')
 
-For example (versions prior to 1.9.0):
+Versions prior to 1.9.0:
 
 .. code-block:: python
 
     from yubico_client import yubico
 
     yubico.CA_CERTS_BUNDLE_PATH = '/home/to/my/bundle.pem'
-    client = yubico.Yubico('client id', 'secret key',
-                           ca_certs_bundle_path='/home/to/my/bundle.pem')
+    client = yubico.Yubico('client id', 'secret key')
 
 Keep in mind that this bundle needs to be in PEM format.
 
