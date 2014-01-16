@@ -2,3 +2,4 @@
 *.log
 dist/
 *.egg-info/
+build/
