@@ -118,7 +118,7 @@ class Yubico(object):
 
         otp = OTP(otp, self.translate_otp)
         rand_str = b(os.urandom(30))
-        nonce = base64.b64encode(rand_str, b('xz'))[:25]
+        nonce = base64.b64encode(rand_str, b('xz'))[:25].decode('utf-8')
         query_string = self.generate_query_string(otp.otp, nonce, timestamp,
                                                   sl, timeout)
 
