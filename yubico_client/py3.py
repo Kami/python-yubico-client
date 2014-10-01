@@ -45,6 +45,7 @@ if sys.version_info >= (3, 2) and sys.version_info < (3, 3):
 
 if PY3:
     from urllib.parse import urlencode as urlencode
+    from urllib.parse import unquote as unquote
 
     u = str
 
@@ -57,6 +58,7 @@ if PY3:
             raise TypeError("Invalid argument %r for b()" % (s,))
 else:
     from urllib import urlencode as urlencode  # NOQA
+    from urllib import unquote as unquote  # NOQA
 
     u = unicode
     b = bytes = str
