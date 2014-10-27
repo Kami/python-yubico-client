@@ -84,7 +84,11 @@ class Yubico(object):
                              ' argument'))
 
         self.client_id = client_id
-        self.key = base64.b64decode(key.encode('ascii')) if key is not None else None
+
+        if key is not None:
+            key = base64.b64decode(key.encode('ascii'))
+
+        self.key = key
         self.verify_cert = verify_cert
         self.translate_otp = translate_otp
         self.api_urls = self._init_request_urls(api_urls=api_urls)
