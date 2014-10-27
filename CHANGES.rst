@@ -3,6 +3,11 @@
 Changelog
 =========
 
+in development
+--------------
+
+* Fix compatibility issue with Python versions >= 3.0 <= 3.3 #22
+
 1.9.1 - 2014-02-05
 ------------------
 
