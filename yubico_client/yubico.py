@@ -60,10 +60,12 @@ DEFAULT_API_URLS = ('https://api.yubico.com/wsapi/2.0/verify',
                     'https://api4.yubico.com/wsapi/2.0/verify',
                     'https://api5.yubico.com/wsapi/2.0/verify')
 
-DEFAULT_TIMEOUT = 10            # How long to wait before the time out occurs
-DEFAULT_MAX_TIME_WINDOW = 5     # How many seconds can pass between the first
-                                # and last OTP generations so the OTP is
-                                # still considered valid.
+# How long to wait before the time out occurs
+DEFAULT_TIMEOUT = 10
+
+# How many seconds can pass between the first and last OTP generation so the
+# OTP is still considered valid
+DEFAULT_MAX_TIME_WINDOW = 5
 
 BAD_STATUS_CODES = ['BAD_OTP', 'REPLAYED_OTP', 'BAD_SIGNATURE',
                     'MISSING_PARAMETER', 'OPERATION_NOT_ALLOWED',
