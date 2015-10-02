@@ -10,7 +10,6 @@ Yubico Python Client
 .. image:: https://secure.travis-ci.org/Kami/python-yubico-client.png?branch=master
         :target: http://travis-ci.org/Kami/python-yubico-client
 
-
 .. image:: https://img.shields.io/pypi/pyversions/yubico-client.svg
         :target: https://pypi.python.org/pypi/yubico-client/
 
@@ -19,7 +18,6 @@ Yubico Python Client
 
 .. image:: https://img.shields.io/github/license/Kami/python-yubico-client.svg
         :target: https://github.com/Kami/python-yubico-client/blob/trunk/LICENSE
-
 
 Python class for verifying Yubico One Time Passwords (OTPs) based on the
 validation protocol version 2.0.
