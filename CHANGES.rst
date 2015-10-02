@@ -11,6 +11,11 @@ in development
 
   Contribution by Wouter van Bommel, Vianney Carel.
 
+* Make sure the query parameters are unquoted when parsing them from the
+  response. #23
+
+  Contribution by Tamás Gulácsi.
+
 1.9.1 - 2014-02-05
 ------------------
 
