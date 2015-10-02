@@ -28,7 +28,8 @@ from yubico_client.yubico_exceptions import (StatusCodeError,
                                              InvalidValidationResponse,
                                              SignatureVerificationError)
 from yubico_client.py3 import b
-from yubico_client.py3 import urlencode, unquote
+from yubico_client.py3 import urlencode
+from yubico_client.py3 import unquote
 
 logger = logging.getLogger('yubico.client')
 
@@ -313,8 +314,10 @@ class Yubico(object):
         http://goo.gl/R4O0E
         """
         # split for sorting
-        pairs = sorted(pair.split('=', 1) for pair in query_string.split('&'))
-        pairs_string = '&' . join('=' . join(pair) for pair in pairs)
+        pairs = query_string.split('&')
+        pairs = [pair.split('=', 1) for pair in pairs]
+        pairs_sorted = sorted(pairs)
+        pairs_string = '&' . join(['=' . join(pair) for pair in pairs_sorted])
 
         digest = hmac.new(self.key, b(pairs_string), hashlib.sha1).digest()
         signature = base64.b64encode(digest).decode('utf-8')
@@ -327,12 +330,12 @@ class Yubico(object):
         server response. 'h' aka signature argument is stripped from the
         returned query string.
         """
-        pairs = sorted(line.strip().split('=', 1)
-                       for line in response.splitlines()
-                       if '=' in line)
+        lines = response.splitlines()
+        pairs = [line.strip().split('=', 1) for line in lines if '=' in line]
+        pairs = sorted(pairs)
         signature = ([unquote(v) for k, v in pairs if k == 'h'] or [None])[0]
         # already quoted
-        query_string = '&' . join(k + '=' + v for k, v in pairs if k != 'h')
+        query_string = '&' . join([k + '=' + v for k, v in pairs if k != 'h'])
 
         return (signature, query_string)
 
