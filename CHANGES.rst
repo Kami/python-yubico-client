@@ -7,6 +7,9 @@ in development
 --------------
 
 * Fix compatibility issue with Python versions >= 3.0 <= 3.3 #22
+* Pin ``requests`` dependency to the latest version (2.7) #25 #27
+
+  Contribution by Wouter van Bommel, Vianney Carel.
 
 1.9.1 - 2014-02-05
 ------------------
