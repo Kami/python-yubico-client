@@ -1,7 +1,7 @@
-__version__ = (1, 9, 2, 'dev')
-
 __all__ = [
     'Yubico'
 ]
+
+__version__ = (1, 10, 0)
 
 from yubico_client.yubico import Yubico
