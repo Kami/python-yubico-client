@@ -3,8 +3,8 @@
 Changelog
 =========
 
-in development
---------------
+1.10.0 - 2015-10-02
+-------------------
 
 * Fix compatibility issue with Python versions >= 3.0 <= 3.3 #22
 * Pin ``requests`` dependency to the latest version (2.7) #25 #27
