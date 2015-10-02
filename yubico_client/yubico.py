@@ -29,6 +29,7 @@ from yubico_client.yubico_exceptions import (StatusCodeError,
                                              SignatureVerificationError)
 from yubico_client.py3 import b
 from yubico_client.py3 import urlencode
+from yubico_client.py3 import unquote
 
 logger = logging.getLogger('yubico.client')
 
@@ -251,6 +252,7 @@ class Yubico(object):
             # Signature located in the response does not match the one we
             # have generated
             if signature != generated_signature:
+                logger.warn("signature mismatch for parameters=%r", parameters)
                 raise SignatureVerificationError(generated_signature,
                                                  signature)
         param_dict = self.get_parameters_as_dictionary(parameters)
@@ -311,8 +313,9 @@ class Yubico(object):
         Returns a HMAC-SHA-1 signature for the given query string.
         http://goo.gl/R4O0E
         """
+        # split for sorting
         pairs = query_string.split('&')
-        pairs = [pair.split('=') for pair in pairs]
+        pairs = [pair.split('=', 1) for pair in pairs]
         pairs_sorted = sorted(pairs)
         pairs_string = '&' . join(['=' . join(pair) for pair in pairs_sorted])
 
@@ -327,31 +330,19 @@ class Yubico(object):
         server response. 'h' aka signature argument is stripped from the
         returned query string.
         """
-        split = [pair.strip() for pair in response.split('\n')
-                 if pair.strip() != '']
-        query_string = '&' . join(split)
-        split_dict = self.get_parameters_as_dictionary(query_string)
-
-        if 'h' in split_dict:
-            signature = split_dict['h']
-            del split_dict['h']
-        else:
-            signature = None
-
-        query_string = ''
-        for index, (key, value) in enumerate(split_dict.items()):
-            query_string += '%s=%s' % (key, value)
-
-            if index != len(split_dict) - 1:
-                query_string += '&'
+        lines = response.splitlines()
+        pairs = [line.strip().split('=', 1) for line in lines if '=' in line]
+        pairs = sorted(pairs)
+        signature = ([unquote(v) for k, v in pairs if k == 'h'] or [None])[0]
+        # already quoted
+        query_string = '&' . join([k + '=' + v for k, v in pairs if k != 'h'])
 
         return (signature, query_string)
 
     def get_parameters_as_dictionary(self, query_string):
         """ Returns query string parameters as a dictionary. """
-        dictionary = dict([parameter.split('=', 1) for parameter
-                           in query_string.split('&')])
-        return dictionary
+        pairs = (x.split('=', 1) for x in query_string.split('&'))
+        return dict((k, unquote(v)) for k, v in pairs)
 
     def _init_request_urls(self, api_urls):
         """
