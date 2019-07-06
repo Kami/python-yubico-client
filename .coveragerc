@@ -1,0 +1,3 @@
+[run]
+omit =
+       tests/mock_http_server.py
