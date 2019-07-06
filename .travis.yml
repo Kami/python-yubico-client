@@ -4,7 +4,7 @@ dist: trusty
 os: linux
 
 matrix:
-  fast_finish: true
+  fast_finish: false
   include:
     - python: 2.7
     - python: 3.4
@@ -15,6 +15,9 @@ matrix:
       sudo: required
     - python: pypy
     - python: pypy3
+    - env: ENV=coverage
+      python: 3.7
+      before_install: TOX_ENV=coverage-travis
 
 install:
   - pip install "tox==3.13.2"
