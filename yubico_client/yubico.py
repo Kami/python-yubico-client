@@ -50,9 +50,9 @@ COMMON_CA_LOCATIONS = [
     '/etc/ssl/certs/ca-certificates.crt',
     '/etc/pki/tls/cert.pem',
     '/etc/pki/CA/cacert.pem',
-    'C:\Windows\curl-ca-bundle.crt',
-    'C:\Windows\ca-bundle.crt',
-    'C:\Windows\cacert.pem'
+    r'C:\Windows\curl-ca-bundle.crt',
+    r'C:\Windows\ca-bundle.crt',
+    r'C:\Windows\cacert.pem'
 ]
 
 DEFAULT_API_URLS = ('https://api.yubico.com/wsapi/2.0/verify',

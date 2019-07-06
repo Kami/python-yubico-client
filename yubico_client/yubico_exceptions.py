@@ -46,6 +46,6 @@ class SignatureVerificationError(YubicoError):
         self.response_signature = response_signature
 
     def __str__(self):
-        return repr('Server response message signature verification failed' +
+        return repr('Server response message signature verification failed'
                     '(expected %s, got %s)' % (self.generated_signature,
                                                self.response_signature))
