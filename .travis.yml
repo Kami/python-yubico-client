@@ -1,22 +1,31 @@
 language: python
-python:
-  - 2.7
-env:
-  - TOX_ENV=lint
-  - TOX_ENV=py27
-  - TOX_ENV=py33
-  - TOX_ENV=py34
-  - TOX_ENV=py35
-  - TOX_ENV=py36
-  - TOX_ENV=py37
-  - TOX_ENV=pypy
-  - TOX_ENV=pypy3
+sudo: false
+dist: trusty
+os: linux
+
+matrix:
+  fast_finish: true
+  include:
+    - python: 2.7
+    - python: 3.4
+    - python: 3.5
+    - python: 3.6
+    - python: 3.7
+    - python: pypy
+    - python: pypy3
 
 install:
   - pip install tox
+  - TOX_ENV=py$TRAVIS_PYTHON_VERSION
 
 script:
   - tox -e $TOX_ENV
+
+cache:
+  apt: true
+  directories:
+    - $HOME/.cache/pip # pip cache
+    - .tox
 
 notifications:
   email:
