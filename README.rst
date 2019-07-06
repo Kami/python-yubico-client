@@ -47,6 +47,17 @@ the main module has been renamed from `yubico` to `yubico_client`. This
 was done to avoid naming conflicts and make creation of distribution specific
 packages easier.
 
+Supported Python Versions
+-------------------------
+
+* Python 2.7
+* Python 3.4
+* Python 3.5
+* Python 3.6
+* Python 3.7
+* PyPy 2
+* PyPy 3
+
 Running Tests
 -------------
 
