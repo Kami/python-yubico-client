@@ -10,6 +10,9 @@ Yubico Python Client
 .. image:: https://secure.travis-ci.org/Kami/python-yubico-client.png?branch=master
         :target: http://travis-ci.org/Kami/python-yubico-client
 
+.. image:: https://img.shields.io/codecov/c/github/Kami/python-yubico-client/master.svg
+        :target: https://codecov.io/github/Kami/python-yubico-client?branch=master
+
 .. image:: https://img.shields.io/pypi/pyversions/yubico-client.svg
         :target: https://pypi.python.org/pypi/yubico-client/
 
