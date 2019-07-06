@@ -15,7 +15,7 @@ matrix:
     - python: pypy3
 
 install:
-  - pip install tox
+  - pip install "tox==3.12.2"
   - TOX_ENV=py$TRAVIS_PYTHON_VERSION
 
 script:
