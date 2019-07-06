@@ -52,10 +52,10 @@ class OTP(object):
         """
         try:
             interpretations = translate(u(otp))
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             return otp
 
-        if len(interpretations) == 0:
+        if not interpretations:
             return otp
         elif len(interpretations) > 1:
             # If there are multiple interpretations first try to use the same

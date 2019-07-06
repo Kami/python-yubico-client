@@ -19,6 +19,7 @@
 # https://bitbucket.org/loewis/django-3k
 
 # Taken from Apache Libcloud which is license under the Apache 2.0 License
+# pylint: disable=all
 import sys
 
 PY3 = False
