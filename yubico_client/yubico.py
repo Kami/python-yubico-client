@@ -6,7 +6,7 @@
 # Author: Tomaz Muraus (http://www.tomaz.me)
 # License: BSD
 #
-# Copyright (c) 2010-2013, Tomaž Muraus
+# Copyright (c) 2010-2019, Tomaž Muraus
 # Copyright (c) 2012, Yubico AB
 # All rights reserved.
 
