@@ -11,17 +11,17 @@ matrix:
     - python: 3.5
     - python: 3.6
     - python: 3.7
-      dist: xenial
-      sudo: required
     - python: pypy
     - python: pypy3
     - env: ENV=coverage
       python: 3.7
       before_install: TOX_ENV=coverage-travis
 
+before_install:
+  - TOX_ENV=py$TRAVIS_PYTHON_VERSION
+
 install:
   - pip install "tox==3.13.2"
-  - TOX_ENV=py$TRAVIS_PYTHON_VERSION
 
 script:
   - tox -e $TOX_ENV
