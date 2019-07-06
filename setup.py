@@ -127,7 +127,6 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: Implementation :: PyPy',
-        'Programming Language :: Python :: Implementation :: PyPy 3',
         'Topic :: Security',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ]
