@@ -3,6 +3,19 @@
 Changelog
 =========
 
+1.11.0 - 2019-07-06
+-------------------
+
+* Drop support for Python 2.6. #28
+* Test the code and verify it works with the following Python versions:
+  * Python 3.3
+  * Python 3.4
+  * Python 3.5
+  * Python 3.6
+  * Python 3.7
+  * PyPy 2
+  * PyPy 3 #28
+
 1.10.0 - 2015-10-02
 -------------------
 
