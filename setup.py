@@ -97,7 +97,7 @@ setup(
     packages=['yubico_client'],
     provides=['yubico_client'],
     install_requires=[
-        'requests>=2.7,<3.0',
+        'requests>=2.22,<3.0',
     ],
     cmdclass={
         'test': TestCommand,
