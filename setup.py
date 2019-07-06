@@ -1,5 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# Name: Yubico Python Client
+# Description: Python class for verifying Yubico One Time Passwords (OTPs).
+#
+# Author: Tomaz Muraus (http://www.tomaz.me)
+# License: BSD
+#
+# Copyright (c) 2010-2019, Tomaž Muraus
+# Copyright (c) 2012, Yubico AB
+# All rights reserved.
+
 import os
 import re
 import sys
@@ -110,8 +120,14 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: Implementation :: PyPy',
+        'Programming Language :: Python :: Implementation :: PyPy 3',
         'Topic :: Security',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ]

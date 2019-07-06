@@ -6,7 +6,7 @@
 # Author: Tomaz Muraus (http://www.tomaz.me)
 # License: BSD
 #
-# Copyright (c) 2010-2013, Tomaž Muraus
+# Copyright (c) 2010-2019, Tomaž Muraus
 # Copyright (c) 2012, Yubico AB
 # All rights reserved.
 
@@ -50,9 +50,9 @@ COMMON_CA_LOCATIONS = [
     '/etc/ssl/certs/ca-certificates.crt',
     '/etc/pki/tls/cert.pem',
     '/etc/pki/CA/cacert.pem',
-    'C:\Windows\curl-ca-bundle.crt',
-    'C:\Windows\ca-bundle.crt',
-    'C:\Windows\cacert.pem'
+    r'C:\Windows\curl-ca-bundle.crt',
+    r'C:\Windows\ca-bundle.crt',
+    r'C:\Windows\cacert.pem'
 ]
 
 DEFAULT_API_URLS = ('https://api.yubico.com/wsapi/2.0/verify',
@@ -81,8 +81,8 @@ class Yubico(object):
 
         if ca_certs_bundle_path and \
            not self._is_valid_ca_bundle_file(ca_certs_bundle_path):
-            raise ValueError(('Invalid value provided for ca_certs_bundle_path'
-                             ' argument'))
+            raise ValueError('Invalid value provided for ca_certs_bundle_path'
+                             ' argument')
 
         self.client_id = client_id
 
@@ -139,6 +139,7 @@ class Yubico(object):
 
         # Wait for a first positive or negative response
         start_time = time.time()
+        # pylint: disable=too-many-nested-blocks
         while threads and (start_time + timeout) > time.time():
             for thread in threads:
                 if not thread.is_alive():
@@ -150,6 +151,7 @@ class Yubico(object):
                                                       return_response)
 
                         if status:
+                            # pylint: disable=no-else-return
                             if return_response:
                                 return status
                             else:
@@ -212,8 +214,8 @@ class Yubico(object):
                             'be older than the last one')
 
         if delta > max_time_window:
-            raise Exception(('More than %s seconds have passed between '
-                            'generating the first and the last OTP.') %
+            raise Exception('More than %s seconds have passed between '
+                            'generating the first and the last OTP.' %
                             (max_time_window))
 
         return True
@@ -266,7 +268,7 @@ class Yubico(object):
             raise InvalidValidationResponse(message, response, param_dict)
 
         if status == 'OK':
-            if return_response:
+            if return_response:  # pylint: disable=no-else-return
                 return param_dict
             else:
                 return True
@@ -359,8 +361,8 @@ class Yubico(object):
         for url in api_urls:
             if not url.startswith('http://') and \
                not url.startswith('https://'):
-                raise ValueError(('URL "%s" contains an invalid or missing'
-                                 ' scheme' % (url)))
+                raise ValueError('URL "%s" contains an invalid or missing'
+                                 ' scheme' % (url))
 
         return list(api_urls)
 
@@ -412,10 +414,10 @@ class URLThread(threading.Thread):
             e = sys.exc_info()[1]
             self.exception = e
             self.response = None
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             e = sys.exc_info()[1]
-            logger.error('Failed to retrieve response: ' + str(e))
+            logger.error('Failed to retrieve response: %s' % (str(e)))
             self.response = None
 
         args = (self.url, self.name, self.response)
-        logger.debug('Received response from %s (thread=%s): %s' % args)
+        logger.debug('Received response from %s (thread=%s): %s' % (args))

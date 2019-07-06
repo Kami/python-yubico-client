@@ -1,0 +1,4 @@
+[run]
+omit =
+       tests/mock_http_server.py
+       yubico_client/py3.py

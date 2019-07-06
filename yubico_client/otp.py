@@ -1,3 +1,15 @@
+# -*- coding: utf-8 -*-
+#
+# Name: Yubico Python Client
+# Description: Python class for verifying Yubico One Time Passwords (OTPs).
+#
+# Author: Tomaz Muraus (http://www.tomaz.me)
+# License: BSD
+#
+# Copyright (c) 2010-2019, Tomaž Muraus
+# Copyright (c) 2012, Yubico AB
+# All rights reserved.
+
 from yubico_client.modhex import translate
 from yubico_client.py3 import u
 
@@ -40,10 +52,10 @@ class OTP(object):
         """
         try:
             interpretations = translate(u(otp))
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             return otp
 
-        if len(interpretations) == 0:
+        if not interpretations:
             return otp
         elif len(interpretations) > 1:
             # If there are multiple interpretations first try to use the same

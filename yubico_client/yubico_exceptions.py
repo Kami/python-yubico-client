@@ -1,3 +1,15 @@
+# -*- coding: utf-8 -*-
+#
+# Name: Yubico Python Client
+# Description: Python class for verifying Yubico One Time Passwords (OTPs).
+#
+# Author: Tomaz Muraus (http://www.tomaz.me)
+# License: BSD
+#
+# Copyright (c) 2010-2019, Tomaž Muraus
+# Copyright (c) 2012, Yubico AB
+# All rights reserved.
+
 __all___ = [
     'YubicoError',
     'StatusCodeError',
@@ -14,6 +26,7 @@ class YubicoError(Exception):
 
 class StatusCodeError(YubicoError):
     def __init__(self, status_code):
+        super(StatusCodeError, self).__init__()
         self.status_code = status_code
 
     def __str__(self):
@@ -23,6 +36,7 @@ class StatusCodeError(YubicoError):
 
 class InvalidClientIdError(YubicoError):
     def __init__(self, client_id):
+        super(InvalidClientIdError, self).__init__()
         self.client_id = client_id
 
     def __str__(self):
@@ -31,6 +45,7 @@ class InvalidClientIdError(YubicoError):
 
 class InvalidValidationResponse(YubicoError):
     def __init__(self, reason, response, parameters=None):
+        super(InvalidValidationResponse, self).__init__()
         self.reason = reason
         self.response = response
         self.parameters = parameters
@@ -42,10 +57,11 @@ class InvalidValidationResponse(YubicoError):
 
 class SignatureVerificationError(YubicoError):
     def __init__(self, generated_signature, response_signature):
+        super(SignatureVerificationError, self).__init__()
         self.generated_signature = generated_signature
         self.response_signature = response_signature
 
     def __str__(self):
-        return repr('Server response message signature verification failed' +
+        return repr('Server response message signature verification failed'
                     '(expected %s, got %s)' % (self.generated_signature,
                                                self.response_signature))

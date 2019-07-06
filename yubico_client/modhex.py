@@ -21,9 +21,10 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 
 from __future__ import unicode_literals
-from functools import reduce
+from functools import reduce  # pylint: disable=redefined-builtin
 
 from yubico_client.py3 import PY3
+from yubico_client.py3 import u
 
 __all__ = ["HEX", "MODHEX", "translate"]
 
@@ -122,9 +123,9 @@ xkipe,cdtsr'oèv.
 ソコシイハキクニマノリミスカナヒ""".split("\n")
 
 index = {}
-for i, alphabet in enumerate(alphabets):
+for i_, alphabet in enumerate(alphabets):
     for letter in alphabet:
-        index.setdefault(letter, set()).update([i])
+        index.setdefault(letter, set()).update([i_])
 
 HEX = "0123456789abcdef"
 MODHEX = "cbdefghijklnrtuv"
@@ -146,9 +147,9 @@ def translate(otp, to=MODHEX):
         if isinstance(to, bytes):
             raise ValueError("to must be unicode")
     else:
-        if not isinstance(otp, unicode):
+        if not isinstance(otp, u):
             raise ValueError("otp must be unicode")
-        if not isinstance(to, unicode):
+        if not isinstance(to, u):
             raise ValueError("to must be unicode")
 
     possible = (set(index[c]) for c in set(otp))
