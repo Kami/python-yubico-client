@@ -168,6 +168,12 @@ class TestYubicoVerifySingle(unittest.TestCase):
         else:
             self.fail('Exception was not thrown')
 
+    def test_verify_retries_500_responses(self):
+        self._set_mock_action('one_gateway_error')
+
+        status = self.client_no_verify_sig.verify('test')
+        self.assertTrue(status)
+
     def test_verify_multi_different_device_ids(self):
         otp_list = [
             'tlerefhcvijlngibueiiuhkeibbcbecehvjiklltnbbl',
