@@ -139,11 +139,17 @@ class Yubico(object):
 
         # Wait for a first positive or negative response
         start_time = time.time()
+
+        # If there's only one server to talk to, raise thread exceptions.
+        # Otherwise we end up ignoring a good answer from a different
+        # server later.
+        raise_exceptions = (len(threads) == 1)
+
         # pylint: disable=too-many-nested-blocks
         while threads and (start_time + timeout) > time.time():
             for thread in threads:
                 if not thread.is_alive():
-                    if thread.exception:
+                    if thread.exception and raise_exceptions:
                         raise thread.exception
                     elif thread.response:
                         status = self.verify_response(thread.response,
@@ -412,6 +418,8 @@ class URLThread(threading.Thread):
             self.response = self.request.content.decode('utf-8')
         except requests.exceptions.SSLError:
             e = sys.exc_info()[1]
+            args = (self.url, self.name, str(e))
+            logger.error('SSL error talking to %s (thread=%s): %s' % (args))
             self.exception = e
             self.response = None
         except Exception:  # pylint: disable=broad-except

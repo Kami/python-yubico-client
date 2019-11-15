@@ -70,6 +70,18 @@ class TestYubicoVerifySingle(unittest.TestCase):
         else:
             self.fail('SSL exception was not thrown')
 
+    def test_ssl_error_with_multiple_servers(self):
+        # Timeout will wait a second, giving time for the HTTPS thread
+        # to fail first
+        self._set_mock_action('timeout')
+
+        client = yubico.Yubico('1234', None,
+                               api_urls=(LOCAL_SERVER_HTTPS + LOCAL_SERVER),
+                               ca_certs_bundle_path=os.path.abspath(__file__))
+
+        status = client.verify('test')
+        self.assertTrue(status)
+
     def test_custom_ca_certs_path_invalid_path(self):
         expected_msg = ('Invalid value provided for ca_certs_bundle_path '
                         'argument')
