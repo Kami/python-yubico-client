@@ -387,12 +387,13 @@ class Yubico(object):
 
 
 class URLThread(threading.Thread):
-    def __init__(self, url, timeout, verify_cert, ca_bundle_path=None):
+    def __init__(self, url, timeout, verify_cert, ca_bundle_path=None, max_retries=3):
         super(URLThread, self).__init__()
         self.url = url
         self.timeout = timeout
         self.verify_cert = verify_cert
         self.ca_bundle_path = ca_bundle_path
+        self.max_retries = max_retries
         self.exception = None
         self.request = None
         self.response = None
@@ -407,9 +408,21 @@ class URLThread(threading.Thread):
             logger.debug('Using custom CA bunde: %s' % (self.ca_bundle_path))
 
         try:
-            self.request = requests.get(url=self.url, timeout=self.timeout,
-                                        verify=verify)
-            self.response = self.request.content.decode('utf-8')
+            retry = 0
+            done = False
+            while retry < self.max_retries and not done:
+                retry += 1
+                self.request = requests.get(
+                    url=self.url, timeout=self.timeout, verify=verify
+                )
+                status_code = self.request.status_code
+                args = (status_code, self.url, self.name)
+                logger.debug('HTTP %d from %s (thread=%s)' % (args))
+                if status_code in (500, 502, 503, 504):
+                    time.sleep(0.5)
+                else:
+                    done = True
+                    self.response = self.request.content.decode("utf-8")
         except requests.exceptions.SSLError:
             e = sys.exc_info()[1]
             self.exception = e

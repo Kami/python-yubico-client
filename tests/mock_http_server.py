@@ -68,6 +68,9 @@ class Handler(BaseHTTPRequestHandler):
         elif mock_action == 'timeout':
             time.sleep(1)
             return self._send_status(status='OK')
+        elif mock_action == 'one_gateway_error':
+            mock_action = 'no_signature_ok'
+            return self._end(status_code=502)
         else:
             self._end(status_code=500)
             return
