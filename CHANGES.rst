@@ -11,6 +11,7 @@ Changelog
   indicate a gateway or a proxy error which might work on a retry.
 
   Contributed by Nigel Williams (@nrw505) #30
+* Pin minimum version for ``requests`` dependency to ``v2.22.0``.
 
 1.11.0 - 2019-07-06
 -------------------
