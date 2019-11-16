@@ -1,5 +1,5 @@
-flake8
-pylint
-coverage
-codecov
+flake8==3.7.9
+pylint==1.9.4
+coverage==4.5.4
+codecov==2.0.15
 -e git+https://github.com/Kami/python-test-utils.git@master#egg=test_utils
