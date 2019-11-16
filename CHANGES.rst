@@ -3,8 +3,8 @@
 Changelog
 =========
 
-1.11.1 - 2019-11-16
--------------------
+1.12.0 - TBD
+------------
 
 * Update code to retry HTTP requests for server errors which might work on a
   retry (5xx status codes returned by the server). Those errors could simply
