@@ -75,9 +75,18 @@ BAD_STATUS_CODES = ['BAD_OTP', 'REPLAYED_OTP', 'BAD_SIGNATURE',
 
 
 class Yubico(object):
+    # pylint: disable=too-many-instance-attributes
     def __init__(self, client_id, key=None, verify_cert=True,
                  translate_otp=True, api_urls=DEFAULT_API_URLS,
-                 ca_certs_bundle_path=None):
+                 ca_certs_bundle_path=None, max_retries=3, retry_delay=0.5):
+        """
+        :param max_retries: Number of times to try to retry the request if
+                            server returns 5xx status code.
+        :type max_retries: ``int``
+        :param retry_delay: How long to wait (in seconds) beteween each retry
+                            attempt.
+        :param retry_delay: ``float``
+        """
 
         if ca_certs_bundle_path and \
            not self._is_valid_ca_bundle_file(ca_certs_bundle_path):
@@ -94,6 +103,8 @@ class Yubico(object):
         self.translate_otp = translate_otp
         self.api_urls = self._init_request_urls(api_urls=api_urls)
         self.ca_certs_bundle_path = ca_certs_bundle_path
+        self.max_retries = max_retries
+        self.retry_delay = retry_delay
 
     def verify(self, otp, timestamp=False, sl=None, timeout=None,
                return_response=False):
@@ -132,8 +143,12 @@ class Yubico(object):
         threads = []
         timeout = timeout or DEFAULT_TIMEOUT
         for url in self.api_urls:
-            thread = URLThread('%s?%s' % (url, query_string), timeout,
-                               self.verify_cert, ca_bundle_path)
+            thread = URLThread(url='%s?%s' % (url, query_string),
+                               timeout=timeout,
+                               verify_cert=self.verify_cert,
+                               ca_bundle_path=ca_bundle_path,
+                               max_retries=self.max_retries,
+                               retry_delay=self.retry_delay)
             thread.start()
             threads.append(thread)
 
