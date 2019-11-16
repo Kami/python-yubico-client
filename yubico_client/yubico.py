@@ -387,13 +387,18 @@ class Yubico(object):
 
 
 class URLThread(threading.Thread):
-    def __init__(self, url, timeout, verify_cert, ca_bundle_path=None, max_retries=3):
+    # pylint: disable=too-many-instance-attributes
+    def __init__(self, url, timeout, verify_cert, ca_bundle_path=None,
+                 max_retries=3, retry_delay=0.5):
         super(URLThread, self).__init__()
+
         self.url = url
         self.timeout = timeout
         self.verify_cert = verify_cert
         self.ca_bundle_path = ca_bundle_path
         self.max_retries = max_retries
+        self.retry_delay = retry_delay
+
         self.exception = None
         self.request = None
         self.response = None
@@ -419,7 +424,9 @@ class URLThread(threading.Thread):
                 args = (status_code, self.url, self.name)
                 logger.debug('HTTP %d from %s (thread=%s)' % (args))
                 if status_code in (500, 502, 503, 504):
-                    time.sleep(0.5)
+                    logger.debug('Retrying HTTP request (attempt_count=%s,'
+                                 'max_retries=%s)' % (retry, self.max_retries))
+                    time.sleep(self.retry_delay)
                 else:
                     done = True
                     self.response = self.request.content.decode("utf-8")
