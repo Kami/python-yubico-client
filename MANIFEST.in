@@ -2,5 +2,6 @@ include LICENSE
 include NOTICE
 include CHANGES.rst
 include README.rst
+prune *.log
 recursive-include tests *.py
 recursive-include demo *.py
