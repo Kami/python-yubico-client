@@ -12,6 +12,14 @@ Changelog
 
   Contributed by Nigel Williams (@nrw505) #30
 * Pin minimum version for ``requests`` dependency to ``v2.22.0``.
+* Update the code so we don't throw an exception if one of the multiple servers
+  we query has issues.
+
+  We query multiple servers in parallel purely for availability reasons and the
+  consistency / sync part is taken care by the server side. The client returns
+  immediately as soon as it receives one positive or a negative response.
+
+  Contributed by Nigel Williams (@nrw505) #29
 
 1.11.0 - 2019-07-06
 -------------------
