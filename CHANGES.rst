@@ -22,6 +22,7 @@ Changelog
   Contributed by Nigel Williams (@nrw505) #29
 * Update code so we send ``User-Agent`` header which includes client version
   information and platform string with each HTTP request.
+* Also test the code with Python 3.8.0 and indicate we also support Python 3.8.
 
 1.11.0 - 2019-07-06
 -------------------
