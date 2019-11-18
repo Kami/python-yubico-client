@@ -33,7 +33,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Yubico Client'
-copyright = u'2013, Tomaz Muraus'
+copyright = u'2013-2019, Tomaz Muraus'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
