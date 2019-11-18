@@ -22,6 +22,7 @@ import logging
 
 import requests
 
+from yubico_client import __version__
 from yubico_client.otp import OTP
 from yubico_client.yubico_exceptions import (StatusCodeError,
                                              InvalidClientIdError,
@@ -72,6 +73,10 @@ BAD_STATUS_CODES = ['BAD_OTP', 'REPLAYED_OTP', 'BAD_SIGNATURE',
                     'MISSING_PARAMETER', 'OPERATION_NOT_ALLOWED',
                     'BACKEND_ERROR', 'NOT_ENOUGH_ANSWERS',
                     'REPLAYED_REQUEST']
+
+CLIENT_VERSION = '.'.join([str(part) for part in __version__])
+PYTHON_VERSION = '%s.%s.%s' % (sys.version_info[0], sys.version_info[1],
+                               sys.version_info[2])
 
 
 class Yubico(object):
@@ -433,13 +438,19 @@ class URLThread(threading.Thread):
             verify = self.ca_bundle_path
             logger.debug('Using custom CA bunde: %s' % (self.ca_bundle_path))
 
+        headers = {
+            'User-Agent': ('yubico-python-client/%s (Python v%s)' %
+                           (CLIENT_VERSION, PYTHON_VERSION))
+        }
+
         try:
             retry = 0
             done = False
             while retry < self.max_retries and not done:
                 retry += 1
                 self.request = requests.get(
-                    url=self.url, timeout=self.timeout, verify=verify
+                    url=self.url, timeout=self.timeout, verify=verify,
+                    headers=headers
                 )
                 status_code = self.request.status_code
                 args = (status_code, self.url, self.name)

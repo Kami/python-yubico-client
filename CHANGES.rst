@@ -20,6 +20,8 @@ Changelog
   immediately as soon as it receives one positive or a negative response.
 
   Contributed by Nigel Williams (@nrw505) #29
+* Update code so we send ``User-Agent`` header which includes client version
+  information and platform string with each HTTP request.
 
 1.11.0 - 2019-07-06
 -------------------
