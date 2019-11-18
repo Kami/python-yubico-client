@@ -6,7 +6,7 @@ import requests
 
 from yubico_client import yubico
 from yubico_client.otp import OTP
-from yubico_client.py3 import PY3, unittest2_required
+from yubico_client.py3 import unittest2_required
 from yubico_client.yubico_exceptions import StatusCodeError
 from yubico_client.yubico_exceptions import InvalidClientIdError
 from yubico_client.yubico_exceptions import SignatureVerificationError

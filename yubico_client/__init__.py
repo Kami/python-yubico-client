@@ -16,4 +16,5 @@ __all__ = [
 
 __version__ = (1, 11, 0)
 
+# pylint: disable=cyclic-import
 from yubico_client.yubico import Yubico
