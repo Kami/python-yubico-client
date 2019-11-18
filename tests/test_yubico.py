@@ -18,7 +18,7 @@ else:
     import unittest
 
 LOCAL_SERVER = ('http://127.0.0.1:8881/wsapi/2.0/verify',)
-LOCAL_SERVER_HTTPS = ('https://127.0.0.1:8881/wsapi/2.0/verify',)
+LOCAL_SERVER_HTTPS = ('https://127.0.0.1:8882/wsapi/2.0/verify',)
 
 
 class TestOTPClass(unittest.TestCase):
@@ -55,10 +55,6 @@ class TestYubicoVerifySingle(unittest.TestCase):
                                                api_urls=LOCAL_SERVER)
 
     def test_invalid_custom_ca_certs_path(self):
-        if hasattr(sys, 'pypy_version_info') or PY3:
-            # TODO: Figure out why this breaks PyPy and 3.3
-            return
-
         client = yubico.Yubico('1234', 'secret123456',
                                api_urls=LOCAL_SERVER_HTTPS,
                                ca_certs_bundle_path=os.path.abspath(__file__))
@@ -69,6 +65,18 @@ class TestYubicoVerifySingle(unittest.TestCase):
             pass
         else:
             self.fail('SSL exception was not thrown')
+
+    def test_ssl_error_with_multiple_servers(self):
+        # Timeout will wait a second, giving time for the HTTPS thread
+        # to fail first
+        self._set_mock_action('timeout')
+
+        client = yubico.Yubico('1234', None,
+                               api_urls=(LOCAL_SERVER_HTTPS + LOCAL_SERVER),
+                               ca_certs_bundle_path=os.path.abspath(__file__))
+
+        status = client.verify('test')
+        self.assertTrue(status)
 
     def test_custom_ca_certs_path_invalid_path(self):
         expected_msg = ('Invalid value provided for ca_certs_bundle_path '
