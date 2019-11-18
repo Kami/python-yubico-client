@@ -14,7 +14,7 @@ __all__ = [
     'Yubico'
 ]
 
-__version__ = (1, 11, 0)
+__version__ = (1, 12, 0)
 
 # pylint: disable=cyclic-import
 from yubico_client.yubico import Yubico
