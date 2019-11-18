@@ -22,7 +22,7 @@ before_install:
   - TOX_ENV=py$TRAVIS_PYTHON_VERSION
 
 install:
-  - pip install "tox==3.13.2"
+  - pip install "tox==3.14.0"
 
 script:
   - tox -e $TOX_ENV
