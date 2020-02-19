@@ -56,11 +56,7 @@ COMMON_CA_LOCATIONS = [
     r'C:\Windows\cacert.pem'
 ]
 
-DEFAULT_API_URLS = ('https://api.yubico.com/wsapi/2.0/verify',
-                    'https://api2.yubico.com/wsapi/2.0/verify',
-                    'https://api3.yubico.com/wsapi/2.0/verify',
-                    'https://api4.yubico.com/wsapi/2.0/verify',
-                    'https://api5.yubico.com/wsapi/2.0/verify')
+DEFAULT_API_URLS = ('https://api.yubico.com/wsapi/2.0/verify',)
 
 # How long to wait before the time out occurs
 DEFAULT_TIMEOUT = 10
