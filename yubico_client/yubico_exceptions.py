@@ -20,8 +20,9 @@ __all___ = [
 
 
 class YubicoError(Exception):
-    """ Base class for Yubico related exceptions. """
-    pass
+    """
+    Base class for Yubico related exceptions.
+    """
 
 
 class StatusCodeError(YubicoError):

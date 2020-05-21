@@ -328,7 +328,6 @@ class Yubico(object):
 
         if self.key:
             hmac_signature = self.generate_message_signature(query_string)
-            hmac_signature = hmac_signature
             query_string += '&h=%s' % (hmac_signature.replace('+', '%2B'))
 
         return query_string
