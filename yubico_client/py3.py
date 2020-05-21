@@ -61,7 +61,7 @@ else:
     from urllib import urlencode as urlencode  # NOQA
     from urllib import unquote as unquote  # NOQA
 
-    u = unicode
+    u = unicode  # NOQA: F821
     b = bytes = str
 
 if PY27 or PY3:
