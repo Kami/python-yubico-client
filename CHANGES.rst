@@ -3,6 +3,25 @@
 Changelog
 =========
 
+1.13.0 - 2020-05-21
+-------------------
+
+* Update client to query a single API server instead of multiple ones in
+  parallel by default.
+
+  Previously, we queried 6 Yubico API servers in parallel for high availability
+  and performance reasons.
+
+  Now api.yubico.com is globally distributed and load balanced so there is no
+  need for us to do that anymore and we can just query a single API server and
+  let the server handle HA and load-balancing.
+
+  Users who run their own internal Yubikey validation servers can still specify
+  a list of servers by passing ``api_urls`` argument to the client constructor
+  (same as before).
+
+  Contributed by @mallensb and @nrw505. Part of #31 and #32.
+
 1.12.0 - 2019-11-18
 -------------------
 
