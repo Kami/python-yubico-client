@@ -276,7 +276,8 @@ class Yubico(object):
             # Signature located in the response does not match the one we
             # have generated
             if signature != generated_signature:
-                logger.warn("signature mismatch for parameters=%r", parameters)
+                logger.warning("signature mismatch for parameters=%r",
+                               parameters)
                 raise SignatureVerificationError(generated_signature,
                                                  signature)
         param_dict = self.get_parameters_as_dictionary(parameters)
