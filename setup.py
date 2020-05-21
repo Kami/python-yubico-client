@@ -118,8 +118,8 @@ setup(
     author='Tomaz Muraus',
     author_email='tomaz+pypi@tomaz.me',
     license='BSD',
-    url='http://github.com/Kami/python-yubico-client/',
-    download_url='http://github.com/Kami/python-yubico-client/downloads/',
+    url='https://github.com/Kami/python-yubico-client/',
+    download_url='https://github.com/Kami/python-yubico-client/releases',
     packages=['yubico_client'],
     provides=['yubico_client'],
     install_requires=[
