@@ -30,17 +30,17 @@ version_re = re.compile(
     r'__version__ = (\(.*?\))')
 
 cwd = os.path.dirname(os.path.abspath(__file__))
-fp = open(os.path.join(cwd, 'yubico_client', '__init__.py'))
 
 version = None
-for line in fp:
-    match = version_re.search(line)
-    if match:
-        version = eval(match.group(1))
-        break
-else:
+with open(os.path.join(cwd, 'yubico_client', '__init__.py')) as fp:
+    for line in fp:
+        match = version_re.search(line)
+        if match:
+            version = eval(match.group(1))
+            break
+
+if not version:
     raise Exception('Cannot find version in __init__.py')
-fp.close()
 
 
 class TestCommand(Command):
