@@ -19,8 +19,8 @@ from glob import glob
 from os.path import splitext, basename, join as pjoin
 from unittest import TextTestRunner, TestLoader
 
-from setuptools import setup
 from distutils.core import Command
+from setuptools import setup
 
 sys.path.insert(0, pjoin(os.path.dirname(__file__)))
 
@@ -36,7 +36,7 @@ with open(os.path.join(cwd, 'yubico_client', '__init__.py')) as fp:
     for line in fp:
         match = version_re.search(line)
         if match:
-            version = eval(match.group(1))
+            version = eval(match.group(1))  # pylint: disable=eval-used
             break
 
 if not version:
@@ -94,6 +94,7 @@ class TestCommand(Command):
         return res.wasSuccessful()
 
     def _run_mock_api_server(self):
+        # pylint: disable=import-outside-toplevel
         from test_utils.process_runners import TCPProcessRunner
 
         script = pjoin(os.path.dirname(__file__), 'tests/mock_http_server.py')
@@ -109,12 +110,15 @@ class TestCommand(Command):
             self.log_paths.append(log_path)
 
 
+with open('CHANGES.rst') as fp:
+    CHANGELOG = fp.read()
+
+
 setup(
     name='yubico-client',
     version='.' . join(map(str, version)),
     description='Library for verifying Yubikey One Time Passwords (OTPs)',
-    long_description=open('README.rst').read() + '\n\n' +
-    open('CHANGES.rst').read(),
+    long_description=open('README.rst').read() + '\n\n' + CHANGELOG,
     author='Tomaz Muraus',
     author_email='tomaz+pypi@tomaz.me',
     license='BSD',
