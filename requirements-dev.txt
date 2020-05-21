@@ -1,5 +1,3 @@
-flake8==3.8.1
-pylint==2.5.2
 coverage==4.5.4
 codecov==2.0.15
 -e git+https://github.com/Kami/python-test-utils.git@master#egg=test_utils
