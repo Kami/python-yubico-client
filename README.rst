@@ -49,6 +49,19 @@ the main module has been renamed from `yubico` to `yubico_client`. This
 was done to avoid naming conflicts and make creation of distribution specific
 packages easier.
 
+Quick Start / Usage
+-------------------
+
+.. code-block:: python
+
+    from yubico_client import Yubico
+
+    client = Yubico('client id', 'secret key')
+    client.verify('otp')
+
+For more information and detailed examples, please refer to the
+documentation - https://yubico-client.readthedocs.io/en/latest/.
+
 Supported Python Versions
 -------------------------
 
