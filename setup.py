@@ -47,6 +47,8 @@ class TestCommand(Command):
     description = 'run test suite'
     user_options = []
 
+    log_paths = []
+
     def initialize_options(self):
         FORMAT = '%(asctime)-15s [%(levelname)s] %(message)s'
         logging.basicConfig(format=FORMAT)
@@ -62,8 +64,20 @@ class TestCommand(Command):
 
     def run(self):
         self._run_mock_api_server()
-        status = self._run_tests()
-        sys.exit(status)
+        succeeded = self._run_tests()
+
+        if succeeded:
+            status_code = 0
+            # On success we delete mock server log files
+            for file_path in self.log_paths:
+                if not os.path.isfile(file_path):
+                    continue
+
+                os.unlink(file_path)
+        else:
+            status_code = 1
+
+        sys.exit(status_code)
 
     def _run_tests(self):
         testfiles = []
@@ -76,7 +90,7 @@ class TestCommand(Command):
 
         t = TextTestRunner(verbosity=2)
         res = t.run(tests)
-        return not res.wasSuccessful()
+        return res.wasSuccessful()
 
     def _run_mock_api_server(self):
         from test_utils.process_runners import TCPProcessRunner
@@ -91,6 +105,7 @@ class TestCommand(Command):
                                       wait_for_address=wait_for_address,
                                       log_path=log_path)
             server.setUp()
+            self.log_paths.append(log_path)
 
 
 setup(
