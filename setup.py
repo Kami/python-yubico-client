@@ -49,6 +49,9 @@ class TestCommand(Command):
 
     log_paths = []
 
+    # Set to False to preserve mock server log files even if the tests succeed
+    delete_mock_server_logs_on_success = True
+
     def initialize_options(self):
         FORMAT = '%(asctime)-15s [%(levelname)s] %(message)s'
         logging.basicConfig(format=FORMAT)
@@ -65,17 +68,15 @@ class TestCommand(Command):
     def run(self):
         self._run_mock_api_server()
         succeeded = self._run_tests()
+        status_code = 0 if succeeded else 1
 
-        if succeeded:
-            status_code = 0
+        if succeeded and self.delete_mock_server_logs_on_success:
             # On success we delete mock server log files
             for file_path in self.log_paths:
                 if not os.path.isfile(file_path):
                     continue
 
                 os.unlink(file_path)
-        else:
-            status_code = 1
 
         sys.exit(status_code)
 
