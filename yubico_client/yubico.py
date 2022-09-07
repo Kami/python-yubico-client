@@ -31,6 +31,14 @@ from yubico_client.yubico_exceptions import (StatusCodeError,
 from yubico_client.py3 import b
 from yubico_client.py3 import urlencode
 from yubico_client.py3 import unquote
+import socket
+import requests.packages.urllib3.util.connection as urllib3_cn
+ 
+def allowed_gai_family():
+    family = socket.AF_INET    # force IPv4
+    return family
+ 
+urllib3_cn.allowed_gai_family = allowed_gai_family
 
 logger = logging.getLogger('yubico.client')
 
